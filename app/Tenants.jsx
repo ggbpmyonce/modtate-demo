@@ -80,13 +80,15 @@
     const [form, setForm] = React.useState({
       name: base0.name || '', phones: (base0.phones && base0.phones.length) ? base0.phones : [{ value: (editing ? base0.phone : initialPhone) || '' }],
       industry: (base0.industry && base0.industry !== '未提供') ? base0.industry : '', taxId: base0.taxId || '', notes: editing ? base0.notes : '', staffName: STAFF_OPTIONS.includes(base0.staffName) ? base0.staffName : '林雅婷',
+      callDate: (base0.date || '').split(' ')[0].replace(/\//g, '-') || new Date().toISOString().slice(0, 10),
     });
     const set = (k) => (e) => setForm(s => ({ ...s, [k]: e && e.target ? e.target.value : e }));
     const submit = () => {
       const phoneText = phoneToText(form.phones);
       if (!form.name.trim() || !onlyDigits(phoneText) || !form.industry.trim()) { flash('請填寫必填欄位（客戶稱呼、聯絡電話、公司名稱/行業別）', 'error'); return; }
       const b = { ...form, name: form.name.trim(), phone: phoneText, phones: form.phones, industry: form.industry.trim() };
-      onSave(editing ? { ...record, ...b } : { ...b, date: nowStr(), status: 'new' });
+      const dateStr = (form.callDate || new Date().toISOString().slice(0, 10)).replace(/-/g, '/');
+      onSave(editing ? { ...record, ...b, date: dateStr } : { ...b, date: dateStr, status: 'new' });
     };
     return h('div', { onClick: onClose, style: { position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 340, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 } },
       h('div', { onClick: (e) => e.stopPropagation(), style: { background: '#fff', borderRadius: 'var(--radius-2xl)', width: '100%', maxWidth: 480, boxShadow: '0 20px 50px rgba(0,0,0,0.25)', padding: '28px 28px 24px', maxHeight: '90vh', overflowY: 'auto' } },
@@ -100,7 +102,9 @@
           h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 } },
             h(Input, { label: '統編', placeholder: '例：12345678', value: form.taxId, onChange: set('taxId') }),
             h(Input, { label: '公司名稱/行業別', required: true, placeholder: '例：軟體科技業', value: form.industry, onChange: set('industry') })),
-          h(Select, { label: '本次承辦', required: true, options: STAFF_OPTIONS, value: form.staffName, onChange: set('staffName') }),
+          h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 } },
+            h(Select, { label: '本次承辦', required: true, options: STAFF_OPTIONS, value: form.staffName, onChange: set('staffName') }),
+            h(Input, { label: '來電日', required: true, type: 'date', value: form.callDate, onChange: set('callDate') })),
           h('div', null,
             h('span', { style: { fontSize: 13, fontWeight: 500, color: 'var(--gray-700)', marginBottom: 6, display: 'block' } }, '本次來電需求／備註'),
             h('textarea', { value: form.notes, onChange: set('notes'), placeholder: '記錄這通來電的需求、預算、區域、可看屋時間等…', style: { padding: '10px 14px', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-md)', fontSize: 14, fontFamily: 'inherit', outline: 'none', color: 'var(--text-primary)', width: '100%', minHeight: 90, resize: 'vertical' } }))),
