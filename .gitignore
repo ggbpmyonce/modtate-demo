@@ -1,0 +1,8 @@
+.DS_Store
+.thumbnail
+node_modules/
+.next/
+
+# 上傳的截圖與暫存圖檔不進 repo
+uploads/
+screenshots/

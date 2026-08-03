@@ -1,0 +1,27 @@
+/* ============================================================
+   Modtate — Spacing tokens (4px base grid)
+   ============================================================ */
+:root {
+  --space-0:   0;
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-5:   20px;
+  --space-6:   24px;
+  --space-7:   28px;
+  --space-8:   32px;
+  --space-9:   36px;
+  --space-10:  40px;
+  --space-12:  48px;
+  --space-16:  64px;
+
+  /* Common semantic gaps */
+  --gap-inline:    var(--space-2);  /* icon ↔ label */
+  --gap-control:   var(--space-3);  /* between form controls (tight) */
+  --gap-field:     var(--space-5);  /* between form fields */
+  --gap-section:   var(--space-8);  /* between page sections */
+  --pad-card:      var(--space-9);  /* card interior padding */
+  --pad-control-x: 22px;            /* button horizontal padding */
+  --pad-control-y: 10px;            /* button / input vertical padding */
+}

@@ -1,0 +1,25 @@
+/* ============================================================
+   Modtate — Radius & elevation tokens
+   ============================================================ */
+:root {
+  /* ---- Corner radii ---- */
+  --radius-xs:    4px;    /* checkbox */
+  --radius-sm:    7px;    /* pagination cells */
+  --radius-md:    8px;    /* inputs, selects, alerts */
+  --radius-lg:    10px;   /* menus, color swatches */
+  --radius-xl:    12px;   /* sub-cards, image tiles, dropdowns */
+  --radius-2xl:   16px;   /* primary surface cards / sheets */
+  --radius-pill:  999px;  /* buttons, badges, pills, toggles */
+
+  /* ---- Shadows / elevation ---- */
+  --shadow-card:     0 1px 3px rgba(16, 24, 40, 0.06);   /* resting cards */
+  --shadow-dropdown: 0 4px 12px rgba(16, 24, 40, 0.06);  /* menus */
+  --shadow-popover:  0 8px 24px rgba(16, 24, 40, 0.12);  /* selects, dialogs */
+
+  /* ---- Focus ring ---- */
+  --ring-focus: 0 0 0 3px rgba(26, 26, 26, 0.10);
+  --ring-error: 0 0 0 3px rgba(255, 66, 57, 0.12);
+
+  /* ---- Borders ---- */
+  --border-width: 1px;
+}

@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Modtate Admin — 商辦租賃後台</title>
+
+<meta name="ext-resource-dependency" content="app/logo.png" data-resource-id="logoMain" />
+<meta name="ext-resource-dependency" content="app/logo-white.png" data-resource-id="logoWhite" />
+<meta name="ext-resource-dependency" content="app/watermark.png" data-resource-id="watermark" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1497366216548-37526070297c?w=1200&q=80" data-resource-id="off0" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&q=80" data-resource-id="off1" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=1200&q=80" data-resource-id="off2" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1200&q=80" data-resource-id="off3" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1604328698692-f76ea9498e76?w=1200&q=80" data-resource-id="off4" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1497215728101-856f4ea42174?w=1200&q=80" data-resource-id="off5" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1568992687947-868a62a9f521?w=1200&q=80" data-resource-id="off6" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&q=80" data-resource-id="off7" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=1200&q=80" data-resource-id="off8" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80" data-resource-id="st0" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1567521464027-f127ff144326?w=1200&q=80" data-resource-id="st1" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1604719312566-8912e9227c6a?w=1200&q=80" data-resource-id="st2" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1582037928769-181f2644ecb7?w=1200&q=80" data-resource-id="st3" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1604754742629-3e5728249d73?w=1200&q=80" data-resource-id="st4" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1534452203293-494d7ddbf7e0?w=1200&q=80" data-resource-id="st5" />
+<meta name="ext-resource-dependency" content="https://images.unsplash.com/photo-1556745757-8d76bdb6984b?w=1200&q=80" data-resource-id="st6" />
+
+<link rel="stylesheet" href="_ds/modern-design-system-410f4dcf-0877-43ef-92bc-118095108ad4/tokens/fonts.css">
+<link rel="stylesheet" href="_ds/modern-design-system-410f4dcf-0877-43ef-92bc-118095108ad4/tokens/colors.css">
+<link rel="stylesheet" href="_ds/modern-design-system-410f4dcf-0877-43ef-92bc-118095108ad4/tokens/typography.css">
+<link rel="stylesheet" href="_ds/modern-design-system-410f4dcf-0877-43ef-92bc-118095108ad4/tokens/spacing.css">
+<link rel="stylesheet" href="_ds/modern-design-system-410f4dcf-0877-43ef-92bc-118095108ad4/tokens/radii.css">
+<link rel="stylesheet" href="_ds/modern-design-system-410f4dcf-0877-43ef-92bc-118095108ad4/styles.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+
+<style>
+  /* English → Roboto, Chinese stays Noto Sans TC */
+  :root { --font-sans: 'Roboto', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; }
+  body { -webkit-font-smoothing: antialiased; font-family: var(--font-sans); background: var(--surface-page); color: var(--text-primary); }
+  :root { --mta-gold: #D4B36A; }
+  ::-webkit-scrollbar { width: 7px; height: 7px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 4px; }
+  button { font-family: var(--font-sans); }
+  h1, h2, h3 { letter-spacing: -0.3px; }
+
+  #mta-sidebar-wrap { position: sticky; top: 0; height: 100vh; }
+  #mta-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 150; }
+
+  @media (max-width: 880px) {
+    #mta-grid { grid-template-columns: 1fr !important; }
+    #mta-sidebar-wrap {
+      position: fixed !important; left: 0; top: 0; bottom: 0; width: 256px; z-index: 200;
+      transform: translateX(-100%); transition: transform 220ms ease;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.12);
+    }
+    #mta-sidebar-wrap.mob-open { transform: translateX(0); }
+    #mta-overlay.mob-open { display: block; }
+    #mta-kpi { grid-template-columns: repeat(2,1fr) !important; }
+    #mta-detail-grid { grid-template-columns: 1fr !important; }
+    #mta-login { grid-template-columns: 1fr !important; }
+    #mta-login-brand { display: none !important; }
+  }
+  @media (min-width: 881px) { #mta-burger { display: none !important; } }
+  @keyframes mtaToastIn { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+  @media (max-width: 560px) {
+    #mta-kpi { grid-template-columns: 1fr !important; }
+    .mta-form-2col, .mta-form-3col { grid-template-columns: 1fr !important; }
+    .mta-detail-gallery { grid-template-columns: 1fr 1fr !important; grid-template-rows: auto !important; height: auto !important; }
+    .mta-detail-gallery > :first-child { grid-row: auto !important; }
+  }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<!-- DS bundle (plain) + data (plain) — run before babel scripts -->
+<script src="_ds/modern-design-system-410f4dcf-0877-43ef-92bc-118095108ad4/_ds_bundle.js"></script>
+<script src="app/data.js"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<template id="__bundler_thumbnail">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#1A1A1A"/>
+    <g fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round">
+      <path d="M30 70V42l20-12 20 12v28"/><path d="M30 70h40"/><path d="M44 70v-12h12v12"/>
+    </g>
+  </svg>
+</template>
+
+<script type="text/babel" src="app/shared.jsx"></script>
+<script type="text/babel" src="app/Login.jsx"></script>
+<script type="text/babel" src="app/Sidebar.jsx"></script>
+<script type="text/babel" src="app/Header.jsx"></script>
+<script type="text/babel" src="app/Dashboard.jsx"></script>
+<script type="text/babel" src="app/Properties.jsx"></script>
+<script type="text/babel" src="app/PillFilters.jsx"></script>
+<script type="text/babel" src="app/PropertyDetail.jsx"></script>
+<script type="text/babel" src="app/PropertyForm.jsx"></script>
+<script type="text/babel" src="app/Tenants.jsx"></script>
+<script type="text/babel" src="app/Inquiries.jsx"></script>
+<script type="text/babel" src="app/Members.jsx"></script>
+<script type="text/babel" src="app/Account.jsx"></script>
+<script type="text/babel" src="app/tweaks-panel.jsx"></script>
+<script type="text/babel" src="app/App.jsx"></script>
+</body>
+</html>
