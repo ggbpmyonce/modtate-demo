@@ -107,56 +107,56 @@
     { name: "賴先生", phones: [{ value: "0975-131-821" }], phone: "0975-131-821", taxId: "29152146", industry: "鉅睿國際科技股份有限公司（電子業）", notes: "第二次來電：確認可看屋時間，希望本週五下午帶看信義區兩間，預算調高到12萬。", staffName: "林雅婷", date: "2026/06/27 14:40", status: "scheduled" },
     { name: "王特助（鉅睿）", phones: [{ value: "02-8195-3000 分機8461" }], phone: "02-8195-3000 分機8461", taxId: "29152146", industry: "鉅睿國際科技股份有限公司（電子業）", notes: "同公司不同分機來電：老闆指定要有獨立會議室，請一併準備報價。", staffName: "林雅婷", date: "2026/06/30 09:20", status: "new" },
     { name: "莊小姐", phones: [{ value: "0910-021-663" }], phone: "0910-021-663", industry: "科技AI", notes: "回訪：上次看的物件覺得坪數偏小，想再看40坪以上、近綠線的。", staffName: "黃淑芬", date: "2026/06/28 11:05", status: "replied" },
-    { name: "任先生", phone: "0925-418-951", industry: "網紅線上培訓", notes: "想盡快安排看/有裝潢佳/預算抓10萬/目前有多間辦公室，想集中成一間，同時設立新公司", staffName: "張偉明", date: "2024/03/26", status: "new" },
-    { name: "莊小姐", phone: "0910-021-663", industry: "科技AI", notes: "本週三下午15:30 綠線區域 10分鐘步行 好停車為主 員工好幾位都有開車 5萬5-6萬 不要低於30坪 zuchuang125", staffName: "黃淑芬", date: "2024/03/26", status: "new" },
-    { name: "陳小姐", phone: "0901-128-686", industry: "純卡拉OK", notes: "這間可以做卡拉OK嗎？ 之前在德惠街，3/15剛頂讓 1人作業無坐檯 屋主同意的話,可以直接電話搜尋加line回覆 H27", staffName: "黃淑芬", date: "2024/03/26", status: "new" },
-    { name: "洪小姐", phone: "0922-254-911", industry: "沒有提供", notes: "問坪數多大？ 目前租約到七月，自己看就好，不喜歡被打擾 有Truecaller  號碼google有多張樂屋網圖片搜尋結果 H08", staffName: "張偉明", date: "2024/03/26", status: "scheduled" },
-    { name: "楊先生", phone: "02-2596-6262", industry: "建設公司", notes: "在哪裡附近？在哪條路上？ W04", staffName: "張偉明", date: "2024/03/26", status: "new" },
-    { name: "曹先生", phone: "0987-002-783", industry: "泰揚不動產", notes: "問店配 客戶是做舞蹈教室，這間可以做舞蹈教室嗎？ H24", staffName: "黃淑芬", date: "2024/03/27", status: "replied" },
-    { name: "李先生", phone: "0989-673-278", industry: "電子模組", notes: "想約3/31下午13:30看 希望條件跟這物件相似 H37", staffName: "林雅婷", date: "2024/03/27", status: "scheduled" },
-    { name: "甯小姐", phone: "0987-676-504", industry: "大師房屋總部", notes: "問店配 客戶想做芭蕾舞蹈教室 H08", staffName: "暫時不指派", date: "2024/03/27", status: "replied" },
-    { name: "蔡先生", phone: "0915-356-990", industry: "電子貿易", notes: "這週日下午14:30 松江南京 長安東路 使用30坪 大概這個價格 H08", staffName: "黃淑芬", date: "2024/03/27", status: "new" },
-    { name: "劉小姐", phone: "0913-333-778", industry: "直銷業", notes: "今晚18:00或是明天可以安排看嗎？ 目前在華視大樓 V34", staffName: "張偉明", date: "2024/03/27", status: "new" },
-    { name: "李小姐", phone: "02-2755-6277", industry: "會計師事務所", notes: "使用坪數是多少？ 7、8月再簽約承租可以嗎？ 目前承租明年2月到期，在大安站附近，預計抓3個月裝潢期 這週都可以安排看，下週出國 ", staffName: "張偉明", date: "2024/03/27", status: "scheduled" },
-    { name: "洪小姐", phone: "02-2775-1520", industry: "精神科診所", notes: "確切的位置在哪裡？ 希望在忠孝復興往敦化方向 使用60-70坪 20萬以下 電梯至少要有2部 目前在忠孝復興站2號出口200號，1", staffName: "黃淑芬", date: "2024/03/27", status: "new" },
-    { name: "蔡先生", phone: "0976-410-764", industry: "健身場館體感娛樂", notes: "土地分區是不是住3？ 確切地址是在哪？ 要確認以上資訊才能預查可否營業登記 然後才申請公司 H25", staffName: "黃淑芬", date: "2024/03/28", status: "new" },
-    { name: "張小姐", phone: "0978-082-066", industry: "才藝補習班", notes: "現在或者中下午可約帶看嗎？ 拓店需求 V28", staffName: "林雅婷", date: "2024/03/28", status: "scheduled" },
-    { name: "張小姐", phone: "0979-687-370", industry: "加盟展行銷", notes: "正確的使用坪數是多少？ 還想問A07 找使用50以上 希望含稅含管15萬內 紅線最遠到信義安和  藍線國管、忠孝復興、新生、敦化 ", staffName: "張偉明", date: "2024/03/28", status: "replied" },
-    { name: "梁小姐", phone: "02-2794-3939", industry: "律師事務所", notes: "想安排4月第一週安排看 條件像這樣的坪數 近捷運站 採光要好 V34 有whocalls顯示Meta Place共享辦公室", staffName: "張偉明", date: "2024/03/29", status: "new" },
-    { name: "陳先生", phone: "02-2380-0944", industry: "國家資訊安全研究院", notes: "實際使用坪數多少？ 有很多院區因都更遷徙 30位員工 70-80坪 六張犁 小南門附近 希望既有裝潢 以能談短租為主 H13", staffName: "黃淑芬", date: "2024/03/29", status: "new" },
-    { name: "王小姐", phone: "0981-840-889 (孫s)", industry: "婚友諮詢", notes: "松山 中山 大安 6萬上下 希望能隔3-4間 希望大廳不要是太舊爛的 週末要能進出 獨立冷氣佳 H08", staffName: "張偉明", date: "2024/03/29", status: "new" },
-    { name: "周先生", phone: "0911-331-547", industry: "廣告行銷", notes: "V代接 明天下午想看 V38", staffName: "林雅婷", date: "2024/03/29", status: "new" },
-    { name: "陳先生", phone: "0955-969-234", industry: "軟體科技業", notes: "現在可以看嗎？ 13:00以前 H37", staffName: "林雅婷", date: "2024/03/30", status: "new" },
-    { name: "陳先生", phone: "0927-825-617", industry: "網路廣告行銷", notes: "今天下午16:00可以看嗎？ V32 H18", staffName: "張偉明", date: "2024/03/30", status: "new" },
-    { name: "王先生", phone: "02-2956-7323 0972-771-478", industry: "天日發展有限公司 批發零售", notes: "隔間有幾間？ 找30坪以上 8-9萬 北車為中心 龍山寺 善導寺 雙連 會有另一個窗口聯絡約帶看時間 H03", staffName: "黃淑芬", date: "2024/03/30", status: "scheduled" },
-    { name: "林小姐", phone: "0983-819-397", industry: "皮拉提斯", notes: "正確地址在哪？ 目前還在嗎？ 使用分區為何？ V38", staffName: "林雅婷", date: "2024/03/30", status: "new" },
-    { name: "余小姐", phone: "02-2732-9386", industry: "電腦資訊", notes: "落地窗陽台坐向？ 使用坪數? 屋齡? 大樓垃圾怎麼收？ 不留手機 直接市話找余小姐 W11", staffName: "張偉明", date: "2024/04/02", status: "new" },
-    { name: "羅先生", phone: "0937-659-378", industry: "生物製藥", notes: "有幾間隔間？ 管理費是多少？ 照片的桌椅在嗎？ 找大安 信義 至少要1-2個隔間 H40", staffName: "黃淑芬", date: "2024/04/02", status: "new" },
-    { name: "陳小姐", phone: "0936-264-858", industry: "中信房屋 內湖店", notes: "問店配 A06", staffName: "暫時不指派", date: "2024/04/02", status: "replied" },
-    { name: "沈先生", phone: "0980-168-188", industry: "業務辦公室", notes: "目前有的公司 85014032、53527427 今天下午可以安排看嗎？ H37", staffName: "張偉明", date: "2024/04/02", status: "new" },
-    { name: "連小姐", phone: "0918-660-112", industry: "藝文產業", notes: "可以安排明天下午16:30看嗎？ 原在中山承租但無法營業登記 H37", staffName: "林雅婷", date: "2024/04/02", status: "new" },
-    { name: "邱先生", phone: "0935-704-242", industry: "通訊科技", notes: "今天下午13:30可以看嗎？ H37", staffName: "林雅婷", date: "2024/04/03", status: "new" },
-    { name: "包先生", phone: "02-7744-5392", industry: "電影製作", notes: "明天下午16:00-16:30可以約看嗎？ V07", staffName: "林雅婷", date: "2024/04/03", status: "scheduled" },
-    { name: "許先生", phone: "02-7749-0838", industry: "住商仁愛光復店", notes: "問店配 A01", staffName: "暫時不指派", date: "2024/04/03", status: "replied" },
-    { name: "許小姐", phone: "0933-029-530", industry: "服飾品牌", notes: "桌椅不要是屋主願意收走的嗎？ 隔間有幾間？ 目前有店面在松江南京 轉網路需要辦公空間 想找慶城街1+2F 中山區 松山區 辦公室5", staffName: "黃淑芬", date: "2024/04/03", status: "new" },
-    { name: "楊先生", phone: "0987-600-567", industry: "多媒體", notes: "重複來電客 當時是簡r來電 下週一下午14:00後可以安排看嗎？ H37", staffName: "林雅婷", date: "2024/04/03", status: "new" },
-    { name: "郭小姐", phone: "02-7710-9550", industry: "金融科技", notes: "明天下午17:30可以看嗎？ V12", staffName: "張偉明", date: "2024/04/03", status: "new" },
-    { name: "王先生", phone: "02-2747-0670", industry: "保險經紀", notes: "地址在哪裡？ 離信義安和站多遠？ 明天10:30之後可以約 A07", staffName: "張偉明", date: "2024/04/03", status: "new" },
-    { name: "賴先生", phone: "0958-139-109", industry: "餐酒館", notes: "等一下可以看嗎？ A10", staffName: "黃淑芬", date: "2024/04/03", status: "new" },
-    { name: "朱小姐", phone: "0980-668-396", industry: "保健調理美妝", notes: "明天中午下午可以看嗎？ 總公司在台中，想再台北找店面 H40", staffName: "林雅婷", date: "2024/04/03", status: "new" },
-    { name: "陳小姐", phone: "02-2721-0315", industry: "酒商", notes: "想安排4/9上午10:00開始看 會找老師一起看希望能看4間 再請提供物件參考 租作辦公室使用，目前承租在安東街即將到期 電話搜尋", staffName: "張偉明", date: "2024/04/04", status: "new" },
-    { name: "陳小姐", phone: "0977-603-907", industry: "自有品牌服飾", notes: "想知道確切地址 在哪個方位？有什麼地標嗎？ 越靠近西門越好 租金可以談嗎？ 想約下週二晚上20:30以後 H21", staffName: "黃淑芬", date: "2024/04/09", status: "scheduled" },
-    { name: "謝先生", phone: "0975-583-818", industry: "有巢氏大安復興店", notes: "問店配 W19", staffName: "張偉明", date: "2024/04/09", status: "replied" },
-    { name: "周先生", phone: "0926-031-499", industry: "運動產業", notes: "明天早上10:00之後可看嗎 大直有承租要到期 W19", staffName: "張偉明", date: "2024/04/09", status: "new" },
-    { name: "陳小姐", phone: "02-6605-7111", industry: "網路媒體行銷、資訊科技", notes: "這週都可以安排看 電話可加line 可否丟一些類似物件提供參考 希望四月終可以租到 來電號有True、Who顯示Step1ne T", staffName: "林雅婷", date: "2024/04/09", status: "new" },
-    { name: "陳小姐", phone: "0970-882-328", industry: "住商不動產 北投店", notes: "問店配 A02", staffName: "黃淑芬", date: "2024/04/10", status: "replied" },
-    { name: "王先生", phone: "0916-708-573", industry: "直銷業", notes: "新家坡商要來臺成立 今天下午可以看嗎？ A09", staffName: "林雅婷", date: "2024/04/10", status: "new" },
-    { name: "陳小姐", phone: "0912-287-186", industry: "專利商標事務所", notes: "實際使用坪數是多少？ 是否如照片現場有隔間，隔間有幾間？ A02", staffName: "張偉明", date: "2024/04/10", status: "new" },
-    { name: "魏先生", phone: "0933-722-875", industry: "牙科診所", notes: "實際使用坪數？ 租金含稅還是不含稅？ 大概在哪裡？ A10", staffName: "張偉明", date: "2024/04/11", status: "new" },
-    { name: "詹先生", phone: "0926-628-058", industry: "台南市東山區農業產銷班", notes: "想約今天看 W19", staffName: "張偉明", date: "2024/04/11", status: "scheduled" },
-    { name: "洪先生", phone: "0916-253-338", industry: "廣告公司", notes: "它還在不在？ V44", staffName: "張偉明", date: "2024/04/11", status: "new" },
-    { name: "杜小姐", phone: "0987-608-523", industry: "建築師事務所", notes: "這間還在不在？ 還會裝修多久？ 有幾個隔間？ 可以登記嗎？ 租約6月到期 急找 V46", staffName: "林雅婷", date: "2024/04/12", status: "new" },
-    { name: "李小姐", phone: "0905-094-421", industry: "藝廊", notes: "今天下午17:30可以看嗎 目前在仁愛路，空間不夠用 V38 號碼有Truecaller/2024/04/30 重複來電 問V07", staffName: "林雅婷", date: "2024/04/12", status: "replied" },
+    { name: "任先生", phone: "0925-418-951", industry: "網紅線上培訓", notes: "想盡快安排看/有裝潢佳/預算抓10萬/目前有多間辦公室，想集中成一間，同時設立新公司", staffName: "張偉明", date: "2024/03/26 17:02", status: "new" },
+    { name: "莊小姐", phone: "0910-021-663", industry: "科技AI", notes: "本週三下午15:30 綠線區域 10分鐘步行 好停車為主 員工好幾位都有開車 5萬5-6萬 不要低於30坪 zuchuang125", staffName: "黃淑芬", date: "2024/03/26 17:02", status: "new" },
+    { name: "陳小姐", phone: "0901-128-686", industry: "純卡拉OK", notes: "這間可以做卡拉OK嗎？ 之前在德惠街，3/15剛頂讓 1人作業無坐檯 屋主同意的話,可以直接電話搜尋加line回覆 H27", staffName: "黃淑芬", date: "2024/03/26 17:02", status: "new" },
+    { name: "洪小姐", phone: "0922-254-911", industry: "沒有提供", notes: "問坪數多大？ 目前租約到七月，自己看就好，不喜歡被打擾 有Truecaller  號碼google有多張樂屋網圖片搜尋結果 H08", staffName: "張偉明", date: "2024/03/26 17:02", status: "scheduled" },
+    { name: "楊先生", phone: "02-2596-6262", industry: "建設公司", notes: "在哪裡附近？在哪條路上？ W04", staffName: "張偉明", date: "2024/03/26 17:02", status: "new" },
+    { name: "曹先生", phone: "0987-002-783", industry: "泰揚不動產", notes: "問店配 客戶是做舞蹈教室，這間可以做舞蹈教室嗎？ H24", staffName: "黃淑芬", date: "2024/03/27 09:09", status: "replied" },
+    { name: "李先生", phone: "0989-673-278", industry: "電子模組", notes: "想約3/31下午13:30看 希望條件跟這物件相似 H37", staffName: "林雅婷", date: "2024/03/27 09:09", status: "scheduled" },
+    { name: "甯小姐", phone: "0987-676-504", industry: "大師房屋總部", notes: "問店配 客戶想做芭蕾舞蹈教室 H08", staffName: "暫時不指派", date: "2024/03/27 09:09", status: "replied" },
+    { name: "蔡先生", phone: "0915-356-990", industry: "電子貿易", notes: "這週日下午14:30 松江南京 長安東路 使用30坪 大概這個價格 H08", staffName: "黃淑芬", date: "2024/03/27 09:09", status: "new" },
+    { name: "劉小姐", phone: "0913-333-778", industry: "直銷業", notes: "今晚18:00或是明天可以安排看嗎？ 目前在華視大樓 V34", staffName: "張偉明", date: "2024/03/27 09:09", status: "new" },
+    { name: "李小姐", phone: "02-2755-6277", industry: "會計師事務所", notes: "使用坪數是多少？ 7、8月再簽約承租可以嗎？ 目前承租明年2月到期，在大安站附近，預計抓3個月裝潢期 這週都可以安排看，下週出國 ", staffName: "張偉明", date: "2024/03/27 09:09", status: "scheduled" },
+    { name: "洪小姐", phone: "02-2775-1520", industry: "精神科診所", notes: "確切的位置在哪裡？ 希望在忠孝復興往敦化方向 使用60-70坪 20萬以下 電梯至少要有2部 目前在忠孝復興站2號出口200號，1", staffName: "黃淑芬", date: "2024/03/27 09:09", status: "new" },
+    { name: "蔡先生", phone: "0976-410-764", industry: "健身場館體感娛樂", notes: "土地分區是不是住3？ 確切地址是在哪？ 要確認以上資訊才能預查可否營業登記 然後才申請公司 H25", staffName: "黃淑芬", date: "2024/03/28 10:16", status: "new" },
+    { name: "張小姐", phone: "0978-082-066", industry: "才藝補習班", notes: "現在或者中下午可約帶看嗎？ 拓店需求 V28", staffName: "林雅婷", date: "2024/03/28 10:16", status: "scheduled" },
+    { name: "張小姐", phone: "0979-687-370", industry: "加盟展行銷", notes: "正確的使用坪數是多少？ 還想問A07 找使用50以上 希望含稅含管15萬內 紅線最遠到信義安和  藍線國管、忠孝復興、新生、敦化 ", staffName: "張偉明", date: "2024/03/28 10:16", status: "replied" },
+    { name: "梁小姐", phone: "02-2794-3939", industry: "律師事務所", notes: "想安排4月第一週安排看 條件像這樣的坪數 近捷運站 採光要好 V34 有whocalls顯示Meta Place共享辦公室", staffName: "張偉明", date: "2024/03/29 11:23", status: "new" },
+    { name: "陳先生", phone: "02-2380-0944", industry: "國家資訊安全研究院", notes: "實際使用坪數多少？ 有很多院區因都更遷徙 30位員工 70-80坪 六張犁 小南門附近 希望既有裝潢 以能談短租為主 H13", staffName: "黃淑芬", date: "2024/03/29 11:23", status: "new" },
+    { name: "王小姐", phone: "0981-840-889 (孫s)", industry: "婚友諮詢", notes: "松山 中山 大安 6萬上下 希望能隔3-4間 希望大廳不要是太舊爛的 週末要能進出 獨立冷氣佳 H08", staffName: "張偉明", date: "2024/03/29 11:23", status: "new" },
+    { name: "周先生", phone: "0911-331-547", industry: "廣告行銷", notes: "V代接 明天下午想看 V38", staffName: "林雅婷", date: "2024/03/29 11:23", status: "new" },
+    { name: "陳先生", phone: "0955-969-234", industry: "軟體科技業", notes: "現在可以看嗎？ 13:00以前 H37", staffName: "林雅婷", date: "2024/03/30 12:30", status: "new" },
+    { name: "陳先生", phone: "0927-825-617", industry: "網路廣告行銷", notes: "今天下午16:00可以看嗎？ V32 H18", staffName: "張偉明", date: "2024/03/30 12:30", status: "new" },
+    { name: "王先生", phone: "02-2956-7323 0972-771-478", industry: "天日發展有限公司 批發零售", notes: "隔間有幾間？ 找30坪以上 8-9萬 北車為中心 龍山寺 善導寺 雙連 會有另一個窗口聯絡約帶看時間 H03", staffName: "黃淑芬", date: "2024/03/30 12:30", status: "scheduled" },
+    { name: "林小姐", phone: "0983-819-397", industry: "皮拉提斯", notes: "正確地址在哪？ 目前還在嗎？ 使用分區為何？ V38", staffName: "林雅婷", date: "2024/03/30 12:30", status: "new" },
+    { name: "余小姐", phone: "02-2732-9386", industry: "電腦資訊", notes: "落地窗陽台坐向？ 使用坪數? 屋齡? 大樓垃圾怎麼收？ 不留手機 直接市話找余小姐 W11", staffName: "張偉明", date: "2024/04/02 11:54", status: "new" },
+    { name: "羅先生", phone: "0937-659-378", industry: "生物製藥", notes: "有幾間隔間？ 管理費是多少？ 照片的桌椅在嗎？ 找大安 信義 至少要1-2個隔間 H40", staffName: "黃淑芬", date: "2024/04/02 11:54", status: "new" },
+    { name: "陳小姐", phone: "0936-264-858", industry: "中信房屋 內湖店", notes: "問店配 A06", staffName: "暫時不指派", date: "2024/04/02 11:54", status: "replied" },
+    { name: "沈先生", phone: "0980-168-188", industry: "業務辦公室", notes: "目前有的公司 85014032、53527427 今天下午可以安排看嗎？ H37", staffName: "張偉明", date: "2024/04/02 11:54", status: "new" },
+    { name: "連小姐", phone: "0918-660-112", industry: "藝文產業", notes: "可以安排明天下午16:30看嗎？ 原在中山承租但無法營業登記 H37", staffName: "林雅婷", date: "2024/04/02 11:54", status: "new" },
+    { name: "邱先生", phone: "0935-704-242", industry: "通訊科技", notes: "今天下午13:30可以看嗎？ H37", staffName: "林雅婷", date: "2024/04/03 12:01", status: "new" },
+    { name: "包先生", phone: "02-7744-5392", industry: "電影製作", notes: "明天下午16:00-16:30可以約看嗎？ V07", staffName: "林雅婷", date: "2024/04/03 12:01", status: "scheduled" },
+    { name: "許先生", phone: "02-7749-0838", industry: "住商仁愛光復店", notes: "問店配 A01", staffName: "暫時不指派", date: "2024/04/03 12:01", status: "replied" },
+    { name: "許小姐", phone: "0933-029-530", industry: "服飾品牌", notes: "桌椅不要是屋主願意收走的嗎？ 隔間有幾間？ 目前有店面在松江南京 轉網路需要辦公空間 想找慶城街1+2F 中山區 松山區 辦公室5", staffName: "黃淑芬", date: "2024/04/03 12:01", status: "new" },
+    { name: "楊先生", phone: "0987-600-567", industry: "多媒體", notes: "重複來電客 當時是簡r來電 下週一下午14:00後可以安排看嗎？ H37", staffName: "林雅婷", date: "2024/04/03 12:01", status: "new" },
+    { name: "郭小姐", phone: "02-7710-9550", industry: "金融科技", notes: "明天下午17:30可以看嗎？ V12", staffName: "張偉明", date: "2024/04/03 12:01", status: "new" },
+    { name: "王先生", phone: "02-2747-0670", industry: "保險經紀", notes: "地址在哪裡？ 離信義安和站多遠？ 明天10:30之後可以約 A07", staffName: "張偉明", date: "2024/04/03 12:01", status: "new" },
+    { name: "賴先生", phone: "0958-139-109", industry: "餐酒館", notes: "等一下可以看嗎？ A10", staffName: "黃淑芬", date: "2024/04/03 12:01", status: "new" },
+    { name: "朱小姐", phone: "0980-668-396", industry: "保健調理美妝", notes: "明天中午下午可以看嗎？ 總公司在台中，想再台北找店面 H40", staffName: "林雅婷", date: "2024/04/03 12:01", status: "new" },
+    { name: "陳小姐", phone: "02-2721-0315", industry: "酒商", notes: "想安排4/9上午10:00開始看 會找老師一起看希望能看4間 再請提供物件參考 租作辦公室使用，目前承租在安東街即將到期 電話搜尋", staffName: "張偉明", date: "2024/04/04 13:08", status: "new" },
+    { name: "陳小姐", phone: "0977-603-907", industry: "自有品牌服飾", notes: "想知道確切地址 在哪個方位？有什麼地標嗎？ 越靠近西門越好 租金可以談嗎？ 想約下週二晚上20:30以後 H21", staffName: "黃淑芬", date: "2024/04/09 09:43", status: "scheduled" },
+    { name: "謝先生", phone: "0975-583-818", industry: "有巢氏大安復興店", notes: "問店配 W19", staffName: "張偉明", date: "2024/04/09 09:43", status: "replied" },
+    { name: "周先生", phone: "0926-031-499", industry: "運動產業", notes: "明天早上10:00之後可看嗎 大直有承租要到期 W19", staffName: "張偉明", date: "2024/04/09 09:43", status: "new" },
+    { name: "陳小姐", phone: "02-6605-7111", industry: "網路媒體行銷、資訊科技", notes: "這週都可以安排看 電話可加line 可否丟一些類似物件提供參考 希望四月終可以租到 來電號有True、Who顯示Step1ne T", staffName: "林雅婷", date: "2024/04/09 09:43", status: "new" },
+    { name: "陳小姐", phone: "0970-882-328", industry: "住商不動產 北投店", notes: "問店配 A02", staffName: "黃淑芬", date: "2024/04/10 10:50", status: "replied" },
+    { name: "王先生", phone: "0916-708-573", industry: "直銷業", notes: "新家坡商要來臺成立 今天下午可以看嗎？ A09", staffName: "林雅婷", date: "2024/04/10 10:50", status: "new" },
+    { name: "陳小姐", phone: "0912-287-186", industry: "專利商標事務所", notes: "實際使用坪數是多少？ 是否如照片現場有隔間，隔間有幾間？ A02", staffName: "張偉明", date: "2024/04/10 10:50", status: "new" },
+    { name: "魏先生", phone: "0933-722-875", industry: "牙科診所", notes: "實際使用坪數？ 租金含稅還是不含稅？ 大概在哪裡？ A10", staffName: "張偉明", date: "2024/04/11 11:57", status: "new" },
+    { name: "詹先生", phone: "0926-628-058", industry: "台南市東山區農業產銷班", notes: "想約今天看 W19", staffName: "張偉明", date: "2024/04/11 11:57", status: "scheduled" },
+    { name: "洪先生", phone: "0916-253-338", industry: "廣告公司", notes: "它還在不在？ V44", staffName: "張偉明", date: "2024/04/11 11:57", status: "new" },
+    { name: "杜小姐", phone: "0987-608-523", industry: "建築師事務所", notes: "這間還在不在？ 還會裝修多久？ 有幾個隔間？ 可以登記嗎？ 租約6月到期 急找 V46", staffName: "林雅婷", date: "2024/04/12 12:04", status: "new" },
+    { name: "李小姐", phone: "0905-094-421", industry: "藝廊", notes: "今天下午17:30可以看嗎 目前在仁愛路，空間不夠用 V38 號碼有Truecaller/2024/04/30 重複來電 問V07", staffName: "林雅婷", date: "2024/04/12 12:04", status: "replied" },
   ];
 
   // ── Members ─────────────────────────────────────────────────
@@ -272,12 +272,36 @@
       const d = day0 + k * 2;
       const hh = String(9 + ((base + k * 7) % 8)).padStart(2, '0');
       const mm = String((base + k * 13) % 60).padStart(2, '0');
-      return {
+      const entry = {
         author: authors[(base + k) % authors.length],
         time: `2024/03/${String(d).padStart(2, '0')} ${hh}:${mm}`,
         text: REMARK_TEMPLATES[(base + k * 3) % REMARK_TEMPLATES.length],
       };
+      // give the first remark a demo reply thread
+      if (k === 0) {
+        entry.replies = [
+          { author: authors[1], time: `2024/03/${String(d).padStart(2, '0')} ${hh}:${String((base + 20) % 60).padStart(2, '0')}`, text: '收到，我今天下午回覆屋主確認。' },
+          { author: 'Aven Hsu', time: `2024/03/${String(d + 1).padStart(2, '0')} 10:15`, text: '好，確認後把結果貼在這串，謝謝。' },
+        ];
+      }
+      return entry;
     });
+  }
+
+  // 產權文件（使用分區/使用執照/地籍圖）— 內部限定，deterministic seed per property
+  const DOC_CATS = ['使用分區', '使用執照', '地籍圖', '其他'];
+  const DOC_UPLOADERS = [{ name: '林雅婷', role: '行政' }, { name: '陳建宏', role: '業務' }, { name: 'Aven Hsu', role: '業務/行政' }, { name: '王小美', role: '行政' }];
+  function docsFor(p) {
+    const base = hashId(p.id + 'doc');
+    const out = [];
+    const mk = (cat, k, ext) => {
+      const u = DOC_UPLOADERS[(base + k) % DOC_UPLOADERS.length];
+      out.push({ id: p.id + '-doc-' + out.length, cat, ext, name: p.id + '_' + cat + '.' + ext, uploader: u.name, uploaderRole: u.role, time: `2024/03/${String(10 + ((base + k * 3) % 18)).padStart(2, '0')} ${String(9 + ((base + k) % 8)).padStart(2, '0')}:${String((base + k * 17) % 60).padStart(2, '0')}`, sizeKB: 180 + ((base + k * 97) % 2600), demo: true });
+    };
+    if (base % 4 !== 0) mk('使用分區', 1, (base % 2) ? 'pdf' : 'png');
+    if (base % 3 !== 0) mk('使用執照', 2, 'pdf');
+    if (base % 5 !== 1) mk('地籍圖', 3, (base % 3) ? 'pdf' : 'png');
+    return out;
   }
 
   window.MTA = {
@@ -286,6 +310,7 @@
     PROPERTIES, INQUIRIES, TENANTS, MEMBERS,
     FORM_OPTIONS, EDIT_OPTIONS, STATUS_LABELS,
     photosFor, remarksFor, seedNotifs, hashId,
+    DOC_CATS, docsFor,
     staffName: (code) => STAFF_MAP[code] || code || '—',
     fmt: (n) => Number(n).toLocaleString('zh-TW'),
   };

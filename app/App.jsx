@@ -102,7 +102,7 @@
     let content;
     if (view === 'dashboard') content = h(Dashboard, { inquiries: M.INQUIRIES, onNav: allowed('inquiries') ? navTo : null, kpiTone: t.kpiTone });
     else if (view === 'properties') content = h(Properties, { role, overrides, deletedIds, onOpenDetail: openDetail, onEdit: startEdit, onDelete: deleteProperty, filterStyle: t.filterStyle, onAdd: (cat) => { setAddCategory(cat || 'office'); setView('addProperty'); } });
-    else if (view === 'propDetail') { const p = enrichOne(detailId, role, overrides); content = p ? h(PropertyDetail, { p, role, mode: detailMode, userName: roleConfig.name, onBack: () => setView('properties'), onEdit: () => startEdit(p), onShare: () => doShare(p.id), shareCopied, onRemarkAdded, onDelete: (pp) => { deleteProperty(pp); setView('properties'); } }) : null; }
+    else if (view === 'propDetail') { const p = enrichOne(detailId, role, overrides); content = p ? h(PropertyDetail, { p, role, mode: detailMode, userName: roleConfig.name, onBack: () => setView('properties'), onEdit: () => startEdit(p), onShare: () => doShare(p.id), shareCopied, onRemarkAdded, onDocChanged: (action, fileName) => pushNotif(`${roleConfig.name} ${action}「${p.name}」的產權文件：${fileName}`, ['老闆', '業務', '行政', '業務/行政'], 'info', p.id), onDelete: (pp) => { deleteProperty(pp); setView('properties'); } }) : null; }
     else if (view === 'addProperty') content = h(AddProperty, { role, category: addCategory, onBack: () => setView('properties'), onSaved: addProperty });
     else if (view === 'editProperty') { const p = enrichOne(editing, role, overrides); content = p ? h(EditProperty, { p, role, onCancel: () => { setEditing(null); setView('properties'); }, onSave: saveEdit }) : null; }
     else if (view === 'inquiries') content = h(Inquiries);

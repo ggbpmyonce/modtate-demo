@@ -269,7 +269,7 @@
   }
 
   // ── the full shared field set ────────────────────────────────
-  function Fields({ f, set, toggle, setMany, canContacts, isStore, photos, setPhotos, typeOptions }) {
+  function Fields({ f, set, toggle, setMany, canContacts, isStore, photos, setPhotos, docs, setDocs, typeOptions }) {
     const sel = (label, req, options, key, placeholder) => h('div', null, h(Lbl, { req }, label), h(Select, { options, value: f[key], onChange: (v) => set(key, v), placeholder }));
     const inp = (label, req, key, props) => h('div', null, h(Lbl, { req }, label), h(Input, Object.assign({ value: f[key], onChange: (e) => set(key, e.target.value) }, props || {})));
     const radioRow = (label, req, options, key) => h('div', null, h(Lbl, { req }, label), h(RadioGroup, { options, value: f[key], onChange: (v) => set(key, v), direction: 'row', gap: 24, style: { flexWrap: 'wrap' } }));
@@ -360,9 +360,45 @@
           f.selfListed === '是' && h('div', { style: { maxWidth: 420 } }, h(Lbl, null, '刊登平台'), h(Input, { placeholder: '例：591、樂屋網、自售看板', value: f.selfListedWhere, onChange: (e) => set('selfListedWhere', e.target.value) })))),
       // 照片
       h(PhotoEditor, { photos, setPhotos }),
+      // 產權文件
+      h(DocEditor, { docs, setDocs }),
       // 備註
       h(FormCard, { title: '備註／重要資訊（內部使用）' },
         h('textarea', { value: f.remark, onChange: (e) => set('remark', e.target.value), placeholder: '記錄業主特殊要求、議價空間、注意事項等重要資訊...', style: { padding: '10px 14px', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-md)', fontSize: 14, fontFamily: 'inherit', outline: 'none', color: 'var(--text-primary)', width: '100%', minHeight: 100, resize: 'vertical' } })));
+  }
+
+  // ── 產權文件編輯器（使用分區/使用執照/地籍圖 · 內部限定）──
+  const fmtKB2 = (kb) => kb >= 1024 ? (kb / 1024).toFixed(1) + ' MB' : Math.round(kb) + ' KB';
+  function DocEditor({ docs, setDocs }) {
+    const CATS = M.DOC_CATS;
+    const [cat, setCat] = React.useState(CATS[0]);
+    const [drag, setDrag] = React.useState(false);
+    const inputRef = React.useRef(null);
+    const addFiles = (files) => {
+      const list = Array.from(files || []).filter(x => /pdf|image/.test(x.type) || /\.(pdf|png|jpe?g)$/i.test(x.name));
+      if (!list.length) { if (window.MTAToastFlash) window.MTAToastFlash('僅支援 PDF 或圖片檔', 'error'); return; }
+      setDocs(ds => [...ds, ...list.map((x, i) => ({ id: 'fd-' + Date.now() + '-' + i, cat, name: x.name, ext: ((x.name.split('.').pop() || '') + '').toLowerCase(), sizeKB: x.size / 1024 }))]);
+      if (window.MTAToastFlash) window.MTAToastFlash('已加入 ' + list.length + ' 個檔案至「' + cat + '」');
+    };
+    const chip = (d) => h('span', { style: { fontSize: 11, fontWeight: 600, color: 'var(--gray-600)', background: 'var(--primary-100)', border: '1px solid var(--border-default)', borderRadius: 999, padding: '1px 8px', flexShrink: 0 } }, d.cat);
+    return h(Card, { padding: 24, style: { borderRadius: 'var(--radius-xl)' } },
+      h('h3', { style: { fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 } }, '產權文件（內部使用）'),
+      h('p', { style: { fontSize: 13, color: 'var(--gray-400)', marginBottom: 16 } }, '使用分區、使用執照、地籍圖等，支援 PDF、PNG、JPG。僅內部業務／行政可見，分享連結不會顯示；也可先留空，建檔後由行政到物件詳細頁補上。'),
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 } },
+        h('span', { style: { fontSize: 13, color: 'var(--gray-600)', fontWeight: 600, flexShrink: 0 } }, '文件類別'),
+        h('select', { value: cat, onChange: (e) => setCat(e.target.value), style: { padding: '8px 12px', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-md)', fontSize: 13, fontFamily: 'inherit', color: 'var(--text-primary)', background: '#fff', outline: 'none', cursor: 'pointer' } }, CATS.map(c => h('option', { key: c, value: c }, c)))),
+      h('label', { onDragOver: (e) => { e.preventDefault(); setDrag(true); }, onDragLeave: () => setDrag(false), onDrop: (e) => { e.preventDefault(); setDrag(false); addFiles(e.dataTransfer.files); }, style: { display: 'block', border: '2px dashed ' + (drag ? 'var(--color-dark)' : 'var(--border-strong)'), background: drag ? 'var(--primary-100)' : 'transparent', borderRadius: 'var(--radius-lg)', padding: '24px', textAlign: 'center', cursor: 'pointer', transition: 'border-color 130ms ease, background 130ms ease' } },
+        h('input', { ref: inputRef, type: 'file', accept: 'application/pdf,image/png,image/jpeg', multiple: true, onChange: (e) => { addFiles(e.target.files); e.target.value = ''; }, style: { display: 'none' } }),
+        h('div', { style: { display: 'flex', justifyContent: 'center', marginBottom: 10, color: 'var(--gray-400)' } }, h(Icons.upload, { size: 28 })),
+        h('div', { style: { fontSize: 14, fontWeight: 600, color: 'var(--gray-700)' } }, '點擊或拖曳上傳「' + cat + '」檔案'),
+        h('div', { style: { fontSize: 12, color: 'var(--gray-400)', marginTop: 4 } }, 'PDF、PNG、JPG（電腦截圖），可一次選多個')),
+      docs.length > 0 && h('div', { style: { display: 'flex', flexDirection: 'column', marginTop: 14, border: '1px solid var(--border-default)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' } },
+        docs.map((d, i) => h('div', { key: d.id, style: { display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', borderTop: i ? '1px solid var(--border-subtle)' : 'none', background: '#fff' } },
+          h('span', { style: { color: d.ext === 'pdf' ? 'var(--error-500)' : 'var(--gray-500)', display: 'flex', flexShrink: 0 } }, h(Icons.fileDoc, { size: 16 })),
+          h('span', { style: { fontSize: 13, fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, d.name),
+          chip(d),
+          h('span', { style: { fontSize: 12, color: 'var(--gray-400)', marginLeft: 'auto', flexShrink: 0, fontFamily: 'var(--font-mono)' } }, fmtKB2(d.sizeKB)),
+          h('button', { onClick: () => setDocs(ds => ds.filter(x => x.id !== d.id)), title: '移除', style: { flexShrink: 0, background: 'none', border: 'none', padding: 4, color: 'var(--error-500)', cursor: 'pointer', display: 'flex' } }, h(Icons.trash, { size: 15 }))))));
   }
 
   function useForm(initial) {
@@ -379,6 +415,7 @@
     const catLabel = category === 'store' ? '出租店面' : '出租辦公';
     const [f, set, toggle, setMany] = useForm(blankForm());
     const [photos, setPhotos] = React.useState([]);
+    const [docs, setDocs] = React.useState([]);
     const save = (isDraft) => {
       if (!isDraft && (!f.buildingName.trim() || !f.address.trim() || !f.usableArea || !f.registeredArea || !f.mainArea || !f.accessoryArea || !f.rent)) {
         if (window.MTAToastFlash) window.MTAToastFlash('請填寫必填欄位（名稱、地址、坪數、租金）', 'error');
@@ -393,7 +430,7 @@
     return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 16 } },
       h(PageHeader, { title: '新增物件', sub: '填寫物件詳細資訊', onBack, crumbs: [{ label: '物件管理', onClick: onBack }, { label: catLabel, onClick: onBack }, { label: '新增物件' }] }),
       h('div', { style: { display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 800 } },
-        h(Fields, { f, set, toggle, setMany, canContacts, isStore: category === 'store', photos, setPhotos, typeOptions: M.FILTERS.houseType }),
+        h(Fields, { f, set, toggle, setMany, canContacts, isStore: category === 'store', photos, setPhotos, docs, setDocs, typeOptions: M.FILTERS.houseType }),
         h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, paddingBottom: 24 } },
           h(Button, { variant: 'outline', size: 'lg', onClick: onBack, style: { width: '100%' } }, '取消'),
           h(Button, { variant: 'primary', size: 'lg', onClick: () => save(false), style: { width: '100%' } }, '新增物件'))));
@@ -404,6 +441,7 @@
     const canContacts = role !== '行政';
     const [f, set, toggle, setMany] = useForm(() => fromProperty(p));
     const [photos, setPhotos] = React.useState(() => (p.photos || []).map((src, i) => ({ src, name: p.id + '-' + (i + 1) + '.jpg', isNew: false })));
+    const [docs, setDocs] = React.useState(() => M.docsFor(p));
     const save = () => {
       if (!f.buildingName.trim() || !f.address.trim() || !f.usableArea || !f.registeredArea || !f.mainArea || !f.accessoryArea || !f.rent) {
         if (window.MTAToastFlash) window.MTAToastFlash('請填寫必填欄位（名稱、地址、坪數、租金）', 'error');
@@ -418,7 +456,7 @@
     return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 16 } },
       h(PageHeader, { title: '編輯物件', sub: '修改物件詳細資訊', idTag: p.id, onBack: onCancel }),
       h('div', { style: { display: 'flex', flexDirection: 'column', gap: 16, maxWidth: 800 } },
-        h(Fields, { f, set, toggle, setMany, canContacts, isStore: M.STORE_TYPES.includes(p.type) || p.category === 'store', photos, setPhotos, typeOptions: ensure(M.FILTERS.houseType, f.propType) }),
+        h(Fields, { f, set, toggle, setMany, canContacts, isStore: M.STORE_TYPES.includes(p.type) || p.category === 'store', photos, setPhotos, docs, setDocs, typeOptions: ensure(M.FILTERS.houseType, f.propType) }),
         h('div', { style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, paddingBottom: 24 } },
           h(Button, { variant: 'primary', size: 'lg', onClick: save, style: { width: '100%' } }, '儲存變更'),
           h(Button, { variant: 'outline', size: 'lg', onClick: onCancel, style: { width: '100%' } }, '取消'))));

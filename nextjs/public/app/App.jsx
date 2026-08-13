@@ -89,7 +89,7 @@
     const startEdit = (p) => { setEditing(p.id); setView('editProperty'); };
     const saveEdit = (form) => { const name = form.name || (M.PROPERTIES.find(x => x.id === editing) || {}).name || ''; setOverrides(o => ({ ...o, [editing]: { ...(o[editing] || {}), ...form } })); setEditing(null); setView('properties'); flash(`已儲存物件變更「${name}」`); };
     const addProperty = (form, isDraft) => { const nm = (form && (form.buildingName || form.name)) || '未命名物件'; setView('properties'); flash(isDraft ? '已儲存為草稿' : `已新增物件「${nm}」`); if (!isDraft) pushNotif(`${roleConfig.name} 新增了物件「${nm}」`, ['老闆', '業務', '行政'], 'property'); };
-    const onRemarkAdded = (propName, propId) => pushNotif(`${roleConfig.name} 在「${propName}」新增了備註`, ['老闆'], 'remark', propId);
+    const onRemarkAdded = (propName, propId, isReply) => pushNotif(`${roleConfig.name} ${isReply ? `在「${propName}」的討論串有新回覆` : `在「${propName}」新增了備註`}`, ['老闆', '業務'], 'remark', propId);
     const openDetail = (id, mode) => { setDetailId(id); setDetailMode(mode || 'summary'); setView('propDetail'); };
     const doShare = (id) => { try { navigator.clipboard && navigator.clipboard.writeText('https://modtate.com/share/' + id); } catch (e) {} setShareCopied(true); flash('已複製分享連結'); clearTimeout(shareTimer.current); shareTimer.current = setTimeout(() => setShareCopied(false), 2000); };
 
@@ -102,7 +102,7 @@
     let content;
     if (view === 'dashboard') content = h(Dashboard, { inquiries: M.INQUIRIES, onNav: allowed('inquiries') ? navTo : null, kpiTone: t.kpiTone });
     else if (view === 'properties') content = h(Properties, { role, overrides, deletedIds, onOpenDetail: openDetail, onEdit: startEdit, onDelete: deleteProperty, filterStyle: t.filterStyle, onAdd: (cat) => { setAddCategory(cat || 'office'); setView('addProperty'); } });
-    else if (view === 'propDetail') { const p = enrichOne(detailId, role, overrides); content = p ? h(PropertyDetail, { p, role, mode: detailMode, userName: roleConfig.name, onBack: () => setView('properties'), onEdit: () => startEdit(p), onShare: () => doShare(p.id), shareCopied, onRemarkAdded, onDelete: (pp) => { deleteProperty(pp); setView('properties'); } }) : null; }
+    else if (view === 'propDetail') { const p = enrichOne(detailId, role, overrides); content = p ? h(PropertyDetail, { p, role, mode: detailMode, userName: roleConfig.name, onBack: () => setView('properties'), onEdit: () => startEdit(p), onShare: () => doShare(p.id), shareCopied, onRemarkAdded, onDocChanged: (action, fileName) => pushNotif(`${roleConfig.name} ${action}「${p.name}」的產權文件：${fileName}`, ['老闆', '業務', '行政', '業務/行政'], 'info', p.id), onDelete: (pp) => { deleteProperty(pp); setView('properties'); } }) : null; }
     else if (view === 'addProperty') content = h(AddProperty, { role, category: addCategory, onBack: () => setView('properties'), onSaved: addProperty });
     else if (view === 'editProperty') { const p = enrichOne(editing, role, overrides); content = p ? h(EditProperty, { p, role, onCancel: () => { setEditing(null); setView('properties'); }, onSave: saveEdit }) : null; }
     else if (view === 'inquiries') content = h(Inquiries);

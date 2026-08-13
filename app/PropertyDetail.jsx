@@ -111,7 +111,7 @@
           canManage && onDelete && h('button', { onClick: onDelete, style: { ...ghost, borderColor: 'var(--error-200)', color: 'var(--error-500)' } }, '刪除'))));
   }
 
-  function PropertyDetail({ p, role, mode, userName, onBack, onEdit, onShare, shareCopied, onRemarkAdded, onDelete }) {
+  function PropertyDetail({ p, role, mode, userName, onBack, onEdit, onShare, shareCopied, onRemarkAdded, onDocChanged, onDelete }) {
     const full = mode === 'full';
     const canManage = role === '老闆';
     const [lb, setLb] = React.useState(-1); // lightbox index, -1 closed
@@ -278,12 +278,86 @@
                   p.selfListed && h('div', null, '屋主自行刊登：' + (p.selfListed === '是' ? (p.selfListedWhere || '是') : '否'))))
             : h('div', { style: { display: 'flex', alignItems: 'center', gap: 8, padding: '14px 14px', background: 'var(--surface-sunken)', borderRadius: 'var(--radius-md)', fontSize: 13, color: 'var(--gray-500)' } }, h(Icons.lock, { size: 14 }), '聯絡資訊僅承辦業務可見')),
           !full && h(Button, { variant: 'primary', size: 'md', onClick: onShare, iconLeft: shareCopied ? h(Icons.check, { size: 16, stroke: 2 }) : h(Icons.share, { size: 16 }), style: { width: '100%' } }, shareCopied ? '已複製連結' : '分享物件連結'))),
+      full && h(Section, { title: '產權文件', sub: '使用分區、使用執照、地籍圖 · 僅內部人員可見', top: true }, h(DocsSection, { p, userName, onChanged: onDocChanged })),
       full && h(Section, { title: '備註／重要資訊', sub: '內部使用 · 含建立人與時間', top: true }, h(RemarkThread, { seed: remarks, userName, canDelete: role === '老闆', onAdded: (text, isReply) => onRemarkAdded && onRemarkAdded(p.name, p.id, isReply) }))));
   }
   const img = { width: '100%', height: '100%', objectFit: 'cover', display: 'block' };
   const grid3 = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '20px 16px', marginTop: 18 };
   const meta = (Icon, txt) => h('span', { style: { display: 'flex', alignItems: 'center', gap: 5 } }, h(Icon, { size: 16, stroke: 1.4 }), txt);
   const chip = { display: 'inline-flex', alignItems: 'center', padding: '6px 14px', borderRadius: 999, background: 'var(--primary-100)', border: '1px solid var(--border-default)', fontSize: 13, fontWeight: 500, color: 'var(--gray-700)' };
+
+  // ── 產權文件 — internal-only upload/download (使用分區/使用執照/地籍圖) ──
+  const fmtKB = (kb) => kb >= 1024 ? (kb / 1024).toFixed(1) + ' MB' : Math.round(kb) + ' KB';
+  function DocsSection({ p, userName, onChanged }) {
+    const CATS = M.DOC_CATS;
+    const [docs, setDocs] = React.useState(() => M.docsFor(p));
+    React.useEffect(() => { setDocs(M.docsFor(p)); }, [p.id]);
+    const [cat, setCat] = React.useState(CATS[0]);
+    const [drag, setDrag] = React.useState(false);
+    const inputRef = React.useRef(null), replaceRef = React.useRef(null), pendingReplace = React.useRef(null);
+    const flash = (t) => window.MTAToastFlash && window.MTAToastFlash(t);
+    const extOf = (n) => ((n.split('.').pop() || '') + '').toLowerCase();
+    const addFiles = (files) => {
+      const list = Array.from(files || []).filter(f => /pdf|image/.test(f.type) || /\.(pdf|png|jpe?g)$/i.test(f.name));
+      if (!list.length) { flash('僅支援 PDF 或圖片檔'); return; }
+      setDocs(ds => [...ds, ...list.map((f, i) => ({ id: 'up-' + Date.now() + '-' + i, cat, ext: extOf(f.name), name: f.name, uploader: userName, time: fmtNow(), sizeKB: f.size / 1024, url: URL.createObjectURL(f) }))]);
+      flash('已上傳 ' + list.length + ' 個檔案至「' + cat + '」');
+      if (onChanged) onChanged('上傳了', list.map(f => f.name).join('、'));
+    };
+    const doReplace = (file) => {
+      const id = pendingReplace.current; pendingReplace.current = null;
+      if (!file || !id) return;
+      setDocs(ds => ds.map(d => d.id === id ? { ...d, name: file.name, ext: extOf(file.name), sizeKB: file.size / 1024, uploader: userName, time: fmtNow(), url: URL.createObjectURL(file), demo: false } : d));
+      flash('已更新檔案'); if (onChanged) onChanged('更新了', file.name);
+    };
+    const del = (d) => { setDocs(ds => ds.filter(x => x.id !== d.id)); flash('已刪除「' + d.name + '」'); if (onChanged) onChanged('刪除了', d.name); };
+    const download = (d) => {
+      if (d.url) { const a = document.createElement('a'); a.href = d.url; a.download = d.name; document.body.appendChild(a); a.click(); a.remove(); return; }
+      const c = document.createElement('canvas'); c.width = 1240; c.height = 877;
+      const x = c.getContext('2d');
+      x.fillStyle = '#fff'; x.fillRect(0, 0, 1240, 877);
+      x.strokeStyle = '#D5D7DA'; x.lineWidth = 3; x.strokeRect(30, 30, 1180, 817);
+      x.fillStyle = '#1A1A1A'; x.textAlign = 'center'; x.font = '700 60px "Noto Sans TC", sans-serif';
+      x.fillText(d.cat, 620, 400);
+      x.fillStyle = '#717680'; x.font = '400 30px "Noto Sans TC", sans-serif';
+      x.fillText('示範文件 · ' + p.id + ' · ' + (p.name || ''), 620, 460);
+      c.toBlob(b => { const url = URL.createObjectURL(b); const a = document.createElement('a'); a.href = url; a.download = d.name.replace(/\.[^.]+$/, '') + '.png'; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1500); });
+    };
+    const isPdf = (e) => e === 'pdf';
+    const extBadge = (ext) => h('span', { style: { flexShrink: 0, width: 42, height: 42, borderRadius: 'var(--radius-md)', background: isPdf(ext) ? 'var(--error-100)' : 'var(--primary-100)', color: isPdf(ext) ? 'var(--error-500)' : 'var(--gray-600)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 1 } },
+      h(Icons.fileDoc, { size: 15 }), h('span', { style: { fontSize: 8, fontWeight: 700, letterSpacing: 0.5 } }, (ext || 'file').toUpperCase()));
+    const ghost = { display: 'inline-flex', alignItems: 'center', gap: 5, padding: '5px 11px', border: '1px solid var(--border-default)', borderRadius: 999, background: '#fff', fontSize: 12, fontWeight: 600, color: 'var(--gray-600)', cursor: 'pointer', fontFamily: 'inherit', whiteSpace: 'nowrap' };
+    const docRow = (d) => h('div', { key: d.id, style: { display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', borderTop: '1px solid var(--border-subtle)' } },
+      extBadge(d.ext),
+      h('div', { style: { flex: 1, minWidth: 0 } },
+        h('div', { style: { fontSize: 13.5, fontWeight: 600, color: 'var(--text-primary)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, d.name),
+        h('div', { style: { fontSize: 12, color: 'var(--gray-400)', marginTop: 2 } }, d.uploader + (d.uploaderRole ? '（' + d.uploaderRole + '）' : '') + ' 上傳 · ' + d.time + ' · ' + fmtKB(d.sizeKB))),
+      h('div', { style: { display: 'flex', gap: 6, flexShrink: 0 } },
+        h('button', { style: ghost, onClick: () => download(d), title: '下載' }, h(Icons.download, { size: 13 }), '下載'),
+        h('button', { style: ghost, onClick: () => { pendingReplace.current = d.id; replaceRef.current && replaceRef.current.click(); }, title: '替換檔案' }, '替換'),
+        h('button', { style: { ...ghost, borderColor: 'var(--error-200)', color: 'var(--error-500)' }, onClick: () => del(d), title: '刪除' }, h(Icons.trash, { size: 13 }), '刪除')));
+    const groups = CATS.map(c => ({ cat: c, items: docs.filter(d => d.cat === c) })).filter(g => g.cat !== '其他' || g.items.length);
+    return h('div', { style: { marginTop: 16, display: 'flex', flexDirection: 'column', gap: 14 } },
+      h('div', { style: { display: 'flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--gray-500)', background: 'var(--surface-sunken)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: '8px 12px' } },
+        h(Icons.lock, { size: 13 }), '內部文件 — 所有業務／行政皆可上傳、下載與修改；分享連結的客戶不會看到此區塊。'),
+      h('div', { onDragOver: (e) => { e.preventDefault(); setDrag(true); }, onDragLeave: () => setDrag(false), onDrop: (e) => { e.preventDefault(); setDrag(false); addFiles(e.dataTransfer.files); }, style: { border: '1.5px dashed ' + (drag ? 'var(--color-dark)' : 'var(--border-strong)'), background: drag ? 'var(--primary-100)' : '#fff', borderRadius: 'var(--radius-lg)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', transition: 'border-color 130ms ease, background 130ms ease' } },
+        h('span', { style: { width: 40, height: 40, borderRadius: 999, background: 'var(--primary-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-dark)', flexShrink: 0 } }, h(Icons.upload, { size: 18 })),
+        h('div', { style: { flex: 1, minWidth: 180 } },
+          h('div', { style: { fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' } }, '拖曳檔案到此處，或點擊上傳'),
+          h('div', { style: { fontSize: 12, color: 'var(--gray-400)', marginTop: 2 } }, '支援 PDF、PNG、JPG（電腦截圖），可一次選取多個檔案')),
+        h('div', { style: { display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 } },
+          h('select', { value: cat, onChange: (e) => setCat(e.target.value), style: { padding: '8px 12px', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-md)', fontSize: 13, fontFamily: 'inherit', color: 'var(--text-primary)', background: '#fff', outline: 'none', cursor: 'pointer' } }, CATS.map(c => h('option', { key: c, value: c }, c))),
+          h(Button, { variant: 'primary', size: 'sm', iconLeft: h(Icons.upload, { size: 14 }), onClick: () => inputRef.current && inputRef.current.click() }, '上傳檔案')),
+        h('input', { ref: inputRef, type: 'file', multiple: true, accept: 'application/pdf,image/png,image/jpeg', style: { display: 'none' }, onChange: (e) => { addFiles(e.target.files); e.target.value = ''; } }),
+        h('input', { ref: replaceRef, type: 'file', accept: 'application/pdf,image/png,image/jpeg', style: { display: 'none' }, onChange: (e) => { doReplace(e.target.files[0]); e.target.value = ''; } })),
+      h('div', { style: { display: 'flex', flexDirection: 'column', gap: 10 } },
+        groups.map(g => h('div', { key: g.cat, style: { border: '1px solid var(--border-default)', borderRadius: 'var(--radius-lg)', background: '#fff', overflow: 'hidden' } },
+          h('div', { style: { display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: 'var(--surface-sunken)' } },
+            h('span', { style: { fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' } }, g.cat),
+            h('span', { style: { fontSize: 11, fontWeight: 600, fontFamily: 'var(--font-mono)', color: 'var(--gray-500)', background: '#fff', border: '1px solid var(--border-default)', borderRadius: 999, padding: '1px 8px' } }, g.items.length),
+            g.items.length === 0 && h('span', { style: { fontSize: 12, color: 'var(--warning-600, #b54708)', marginLeft: 'auto' } }, '尚未上傳 — 可由行政後續補上')),
+          g.items.map(docRow)))));
+  }
 
   // ── remark discussion (Slack/Notion-style threads with replies) ──
   function fmtNow() {

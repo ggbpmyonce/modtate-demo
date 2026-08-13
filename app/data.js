@@ -288,12 +288,29 @@
     });
   }
 
+  // 產權文件（使用分區/使用執照/地籍圖）— 內部限定，deterministic seed per property
+  const DOC_CATS = ['使用分區', '使用執照', '地籍圖', '其他'];
+  const DOC_UPLOADERS = [{ name: '林雅婷', role: '行政' }, { name: '陳建宏', role: '業務' }, { name: 'Aven Hsu', role: '業務/行政' }, { name: '王小美', role: '行政' }];
+  function docsFor(p) {
+    const base = hashId(p.id + 'doc');
+    const out = [];
+    const mk = (cat, k, ext) => {
+      const u = DOC_UPLOADERS[(base + k) % DOC_UPLOADERS.length];
+      out.push({ id: p.id + '-doc-' + out.length, cat, ext, name: p.id + '_' + cat + '.' + ext, uploader: u.name, uploaderRole: u.role, time: `2024/03/${String(10 + ((base + k * 3) % 18)).padStart(2, '0')} ${String(9 + ((base + k) % 8)).padStart(2, '0')}:${String((base + k * 17) % 60).padStart(2, '0')}`, sizeKB: 180 + ((base + k * 97) % 2600), demo: true });
+    };
+    if (base % 4 !== 0) mk('使用分區', 1, (base % 2) ? 'pdf' : 'png');
+    if (base % 3 !== 0) mk('使用執照', 2, 'pdf');
+    if (base % 5 !== 1) mk('地籍圖', 3, (base % 3) ? 'pdf' : 'png');
+    return out;
+  }
+
   window.MTA = {
     ROLE_CONFIG, MY_STAFF_CODES, STAFF_MAP, STORE_TYPES,
     FILTERS, RENT_RANGES, AREA_RANGES, FLOOR_RANGES,
     PROPERTIES, INQUIRIES, TENANTS, MEMBERS,
     FORM_OPTIONS, EDIT_OPTIONS, STATUS_LABELS,
     photosFor, remarksFor, seedNotifs, hashId,
+    DOC_CATS, docsFor,
     staffName: (code) => STAFF_MAP[code] || code || '—',
     fmt: (n) => Number(n).toLocaleString('zh-TW'),
   };
