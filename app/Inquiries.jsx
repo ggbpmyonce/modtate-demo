@@ -29,7 +29,7 @@
     return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 20 } },
       h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 } },
         h('h1', { style: { fontSize: 22, fontWeight: 700 } }, '詢問管理'),
-        h(Button, { variant: 'outline', size: 'sm', iconLeft: h(Icons.export, { size: 14 }) }, '匯出 Excel')),
+        h(Button, { variant: 'outline', size: 'sm', iconLeft: h(Icons.export, { size: 14 }), onClick: () => window.MTAUI.exportExcel('詢問管理', ['詢問人', '電話', 'Email', '物件名稱', '詢問內容', '時間', '狀態'], list.map(i => [i.name, i.phone, i.email, i.property, i.message, i.date, (M.STATUS_LABELS.inq || {})[i.status] || i.status])) }, '匯出 Excel')),
       h('div', { style: { display: 'flex', gap: 2, background: 'var(--primary-100)', borderRadius: 10, padding: 3, width: 'fit-content' } },
         tabs.map(([v, l]) => { const on = tab === v; return h('button', { key: v, onClick: () => setTab(v), style: { padding: '7px 16px', border: 'none', borderRadius: 999, background: on ? '#fff' : 'transparent', fontSize: 13, fontWeight: on ? 600 : 500, color: on ? 'var(--text-primary)' : 'var(--gray-600)', cursor: 'pointer', fontFamily: 'inherit', boxShadow: on ? '0 1px 2px rgba(0,0,0,0.06)' : 'none' } }, l); })),
       h(Card, { padding: 0, style: { overflow: 'hidden' } },

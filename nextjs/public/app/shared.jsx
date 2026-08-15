@@ -123,7 +123,34 @@
     }, text);
   }
 
-  window.MTAUI = { Icons, StatusBadge, RolePill, Avatar, h };
+  function exportExcel(filename, headers, rows) {
+    const esc = (v) => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+    const csv = '\uFEFF' + [headers].concat(rows).map(r => r.map(esc).join(',')).join('\r\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename + '_' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    if (window.MTAToastFlash) window.MTAToastFlash('已匯出 ' + rows.length + ' 筆資料（Excel 可直接開啟）', 'success');
+  }
+
+  // 台灣電話自動加 - ：手機 0918-888-888；市話 02-2501-1234；分機用 # 保留（02-2501-1234#133）
+  function fmtPhone(v) {
+    const s = String(v || '');
+    const hashAt = s.indexOf('#');
+    const extRaw = hashAt >= 0 ? s.slice(hashAt + 1).replace(/[^0-9]/g, '') : null;
+    const d = (hashAt >= 0 ? s.slice(0, hashAt) : s).replace(/[^0-9]/g, '').slice(0, 10);
+    let out;
+    if (d.startsWith('09')) out = [d.slice(0, 4), d.slice(4, 7), d.slice(7, 10)].filter(Boolean).join('-');
+    else if (d.startsWith('0') && d.length > 2) {
+      const rest = d.slice(2);
+      out = rest.length > 4 ? [d.slice(0, 2), rest.slice(0, rest.length - 4), rest.slice(rest.length - 4)].join('-') : d.slice(0, 2) + '-' + rest;
+    } else out = d;
+    return out + (hashAt >= 0 ? '#' + (extRaw || '') : '');
+  }
+
+  window.MTAUI = { Icons, StatusBadge, RolePill, Avatar, h, exportExcel, fmtPhone };
 
   // ── global toast ─────────────────────────────────────────────
   function Toast({ toast }) {

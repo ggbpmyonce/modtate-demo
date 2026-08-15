@@ -159,7 +159,8 @@
           h('div', null, h(Lbl, { req: i === 0 }, '先生/小姐'), h(Select, { options: O.honorific, value: c.honorific, onChange: (v) => setRow(i, 'honorific', v) }))),
         h('div', { className: 'mta-form-2col', style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 } },
           h('div', null, h(Lbl, { req: i === 0 }, '聯絡人姓氏（稱呼）'), h(Input, { placeholder: '例：王', value: c.surname, onChange: (e) => setRow(i, 'surname', e.target.value) })),
-          h('div', null, h(Lbl, { req: i === 0 }, '聯絡人電話'), h(Input, { placeholder: '例：0912-345-678', value: c.phone, onChange: (e) => setRow(i, 'phone', e.target.value) }))))),
+          h('div', null, h(Lbl, { req: i === 0 }, '聯絡人電話'), h(Input, { placeholder: '例：0918-888-888 或 02-2501-1234#133', value: c.phone, onChange: (e) => setRow(i, 'phone', window.MTAUI.fmtPhone(e.target.value)) }),
+            h('p', { style: { fontSize: 12, color: 'var(--gray-400)', marginTop: 5 } }, '自動加「-」；分機請用 #，例：02-2501-1234#133'))))),
       h('button', { type: 'button', onClick: add, style: { alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 6, padding: '7px 14px', border: '1px dashed var(--border-strong)', borderRadius: 999, background: '#fff', fontSize: 13, fontWeight: 600, color: 'var(--gray-700)', cursor: 'pointer', fontFamily: 'inherit' } }, h(Icons.plus, { size: 14, stroke: 2 }), '新增聯絡人'));
   }
 
@@ -222,7 +223,8 @@
       usableArea: '', registeredArea: '', mainArea: '', accessoryArea: '', areaBasis: '使用坪數', bizReg: '是', partition: '視情況而定', seatMin: '', seatMax: '',
       rent: '', deposit: '面議', depositOther: '', mgmt: '', agencyFee: '', taxType: '未稅(個人)', minLease: '1年', minLeaseOther: '', freeRent: '無', freeRentOther: '', decoration: '簡易裝潢',
       facilities: [], customFacilities: [], toiletKind: '獨立衛生間', toilet: '廁內', acSystem: '獨立冷氣', acHours: '', parking: '無車位', parkingRent: '', parkingCount: '', parkingEntry: '坡道', parkingSpaces: [{ kind: '平面', price: '' }], ceilingH: '', passengerLift: '', cargoLift: '', propMgmtCompany: '',
-      industries: [], suitUnlimited: false, suitIndustries: [], mrt: '', phonePosted: '否', selfListed: '否', selfListedWhere: '',
+      industries: [], suitUnlimited: false, suitIndustries: [], mrt: '', mrtLine: '', phonePosted: '否', selfListed: '否', selfListedWhere: '',
+      hasTenant: '無', leaseUntil: '',
       storeType: '商業街店面', storeRoadWidth: '', storeBizStatus: '空置中', storeTraffic: [], bannedIndustries: [],
       owners: [{ name: '', honorific: '' }],
       contactIdentity: '所有權人', contactIdentityOther: '', honorific: '先生', contactSurname: '', contactPhone: '',
@@ -243,7 +245,9 @@
       usableArea: p.area, rent: p.rent, mgmt: /^[0-9]/.test(p.mgmt) ? p.mgmt.replace(/,/g, '') : '',
       taxType: (p.tax || '').includes('含稅') ? '含稅(個人)' : '未稅(個人)',
       acSystem: p.ac === '無' ? '無冷氣' : p.ac, acHours: p.acHours || '', parking: p.parking, parkingRent: p.parkingRent || '', parkingCount: p.parkingCount || '', parkingEntry: p.parkingEntry || '坡道', parkingSpaces: (p.parkingSpaces && p.parkingSpaces.length) ? p.parkingSpaces : [{ kind: '平面', price: p.parkingRent || '' }], mrt: p.mrt,
+      mrtLine: p.mrtLine || Object.keys(M.MRT_LINES).find(l => M.MRT_LINES[l].some(s => (p.mrt || '').startsWith(s))) || '',
       contactIdentity: (p.contactRole === '屋主' ? '所有權人' : p.contactRole), honorific: honor, contactSurname: (p.contactName || '').replace(/(先生|小姐)$/, ''), contactPhone: p.phone,
+      hasTenant: p.hasTenant || '無', leaseUntil: p.leaseUntil || '',
       owners: (p.owners && p.owners.length) ? p.owners : [{ name: '', honorific: '' }],
       contacts: (p.contacts && p.contacts.length) ? p.contacts : [{ identity: (p.contactRole === '屋主' ? '所有權人' : p.contactRole) || '所有權人', identityOther: '', honorific: honor, surname: (p.contactName || '').replace(/(先生|小姐)$/, ''), phone: p.phone || '' }],
     };
@@ -252,13 +256,15 @@
   function toProperty(f) {
     const seats = (f.seatMin || f.seatMax) ? `${f.seatMin || '?'}–${f.seatMax || '?'} 個` : '';
     return {
-      name: f.buildingName, address: f.address, type: f.propType, propClass: f.propClass, floor: f.rentFloor ? (f.rentFloor + 'F') : '',
+      name: f.buildingName, address: (f.address || '').includes(f.city) ? f.address : (f.city || '') + (f.district || '') + (f.address || ''), type: f.propType, propClass: f.propClass, floor: f.rentFloor ? (f.rentFloor + 'F') : '',
       area: Number(f.usableArea) || 0, rent: Number(f.rent) || 0, mgmt: f.mgmt ? f.mgmt : '現場問',      mrt: f.mrt, tax: f.taxType.includes('含稅') ? '含稅' : '未稅',
       ac: f.acSystem === '無冷氣' ? '無' : f.acSystem, acHours: (f.acSystem || '').includes('中央空調') ? f.acHours : '', parking: f.parking, parkingRent: f.parking === '有車位要另租' ? f.parkingRent : '', parkingCount: f.parking === '租金含車位' ? f.parkingCount : '', parkingEntry: f.parking === '有車位要另租' ? f.parkingEntry : '', parkingSpaces: f.parking === '有車位要另租' ? (f.parkingSpaces || []).filter(s => s.price || s.kind) : [], status: LABEL_TO_STATUS[f.status] || 'negotiating',
       ownerSurname: f.ownerSurname, ownerHonorific: f.ownerHonorific, ownerCompany: f.ownerCompany, owners: (f.owners || []).filter(o => (o.name || '').trim()),
       contactRole: f.contactIdentity === '其他（自訂）' ? (f.contactIdentityOther || '其他') : f.contactIdentity, contactName: (f.contactSurname || '') + (f.honorific || ''), phone: f.contactPhone,
       contacts: (f.contacts || []).filter(c => (c.surname || '').trim() || (c.phone || '').trim()).map(c => ({ identity: c.identity === '其他（自訂）' ? (c.identityOther || '其他') : c.identity, honorific: c.honorific, surname: c.surname, phone: c.phone })),
       // extended fields surfaced read-only in the detail view
+      mrtLine: f.mrtLine,
+      hasTenant: f.hasTenant, leaseUntil: f.hasTenant === '有' ? f.leaseUntil : '',
       totalFloor: f.totalFloor ? (f.totalFloor + 'F') : '', areaBasis: f.areaBasis, bizReg: f.bizReg, partition: f.partition, seats,
       registeredArea: f.registeredArea ? (f.registeredArea + ' 坪') : '', mainArea: f.mainArea ? (f.mainArea + ' 坪') : '', accessoryArea: f.accessoryArea ? (f.accessoryArea + ' 坪') : '',
       deposit: f.deposit === '其他（自訂）' ? (f.depositOther || '其他') : f.deposit, minLease: f.minLease === '其他（自訂）' ? (f.minLeaseOther || '其他') : f.minLease, freeRent: f.freeRent === '其他' ? (f.freeRentOther || '其他') : f.freeRent, decoration: f.decoration,
@@ -281,7 +287,9 @@
         row2(inp('地址', true, 'address', { placeholder: '例：信義路五段7號' }), inp('總樓層', false, 'totalFloor', { type: 'number', placeholder: '例：20' })),
         !isStore
           ? row3(sel('房屋型態', true, typeOptions, 'propType'), sel('狀態', true, O.status, 'status'), sel('類別', true, M.FILTERS.propClass, 'propClass'))
-          : row2(sel('房屋型態', true, typeOptions, 'propType'), sel('狀態', true, O.status, 'status'))),
+          : row2(sel('房屋型態', true, typeOptions, 'propType'), sel('狀態', true, O.status, 'status')),
+        row2(radioRow('是否有租客', true, ['無', '有'], 'hasTenant'),
+          f.hasTenant === '有' ? inp('租約到期', false, 'leaseUntil', { placeholder: '例：2026/12/31 或 明年6月底' }) : h('div', null))),
       // 坪數與格局
       h(FormCard, { title: '坪數與格局' },
         h('div', null, h(Lbl, { req: true }, '可使用坪數（坪）'), h(Input, { type: 'number', placeholder: '例：65', value: f.usableArea, onChange: (e) => set('usableArea', e.target.value) })),
@@ -347,7 +355,14 @@
         h('p', { style: { fontSize: 13, color: 'var(--gray-400)', marginBottom: 16 } }, '填寫適合的辦公行業，能幫您快速過濾無效租客'),
         h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 14 } }, O.industries.map(x => h(Checkbox, { key: x, label: x, checked: f.industries.includes(x), onChange: () => toggle('industries', x) })))),
       // 附近交通
-      h(FormCard, { title: '附近交通' }, inp('最近捷運站', false, 'mrt', { placeholder: '例：忠孝敦化站' })),
+      h(FormCard, { title: '附近交通' },
+        row2(
+          h('div', null, h(Lbl, null, '捷運路線'),
+            h(Select, { options: Object.keys(M.MRT_LINES), value: f.mrtLine, placeholder: '選擇捷運線', onChange: (v) => setMany({ mrtLine: v, mrt: '' }) })),
+          h('div', null, h(Lbl, null, '最近捷運站'),
+            f.mrtLine
+              ? h(Select, { options: M.MRT_LINES[f.mrtLine].map(s => s + '站'), value: f.mrt, placeholder: '選擇捷運站', onChange: (v) => set('mrt', v) })
+              : h(Select, { options: [], value: '', placeholder: '請先選擇捷運路線', onChange: () => {} })))),
       // 所有權人 (老闆專屬)
       canContacts && h(FormCard, { title: '所有權人' },
         h(OwnerRows, { owners: f.owners && f.owners.length ? f.owners : [{ name: '', honorific: '' }], setOwners: (v) => set('owners', v) })),
@@ -372,25 +387,30 @@
   function DocEditor({ docs, setDocs }) {
     const CATS = M.DOC_CATS;
     const [cat, setCat] = React.useState(CATS[0]);
+    const [customCat, setCustomCat] = React.useState('');
     const [drag, setDrag] = React.useState(false);
     const inputRef = React.useRef(null);
+    const useCatOf = () => cat === '其他' ? (customCat.trim() || '其他') : cat;
     const addFiles = (files) => {
       const list = Array.from(files || []).filter(x => /pdf|image/.test(x.type) || /\.(pdf|png|jpe?g)$/i.test(x.name));
       if (!list.length) { if (window.MTAToastFlash) window.MTAToastFlash('僅支援 PDF 或圖片檔', 'error'); return; }
-      setDocs(ds => [...ds, ...list.map((x, i) => ({ id: 'fd-' + Date.now() + '-' + i, cat, name: x.name, ext: ((x.name.split('.').pop() || '') + '').toLowerCase(), sizeKB: x.size / 1024 }))]);
-      if (window.MTAToastFlash) window.MTAToastFlash('已加入 ' + list.length + ' 個檔案至「' + cat + '」');
+      const useCat = useCatOf();
+      setDocs(ds => [...ds, ...list.map((x, i) => ({ id: 'fd-' + Date.now() + '-' + i, cat: useCat, name: x.name, ext: ((x.name.split('.').pop() || '') + '').toLowerCase(), sizeKB: x.size / 1024 }))]);
+      if (window.MTAToastFlash) window.MTAToastFlash('已加入 ' + list.length + ' 個檔案至「' + useCat + '」');
     };
     const chip = (d) => h('span', { style: { fontSize: 11, fontWeight: 600, color: 'var(--gray-600)', background: 'var(--primary-100)', border: '1px solid var(--border-default)', borderRadius: 999, padding: '1px 8px', flexShrink: 0 } }, d.cat);
     return h(Card, { padding: 24, style: { borderRadius: 'var(--radius-xl)' } },
       h('h3', { style: { fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 4 } }, '產權文件（內部使用）'),
-      h('p', { style: { fontSize: 13, color: 'var(--gray-400)', marginBottom: 16 } }, '使用分區、使用執照、地籍圖等，支援 PDF、PNG、JPG。僅內部業務／行政可見，分享連結不會顯示；也可先留空，建檔後由行政到物件詳細頁補上。'),
-      h('div', { style: { display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 } },
-        h('span', { style: { fontSize: 13, color: 'var(--gray-600)', fontWeight: 600, flexShrink: 0 } }, '文件類別'),
-        h('select', { value: cat, onChange: (e) => setCat(e.target.value), style: { padding: '8px 12px', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-md)', fontSize: 13, fontFamily: 'inherit', color: 'var(--text-primary)', background: '#fff', outline: 'none', cursor: 'pointer' } }, CATS.map(c => h('option', { key: c, value: c }, c)))),
+      h('p', { style: { fontSize: 13, color: 'var(--gray-400)', marginBottom: 16 } }, '使用分區、使用執照、地籍圖、平面圖等，支援 PDF、PNG、JPG。僅內部業務／行政可見，分享連結不會顯示；也可先留空，建檔後由行政到物件詳細頁補上。'),
+      h('div', { style: { display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 12, flexWrap: 'wrap' } },
+        h('span', { style: { fontSize: 13, color: 'var(--gray-600)', fontWeight: 600, flexShrink: 0, lineHeight: '30px' } }, '文件類別'),
+        h('div', { style: { display: 'flex', flexDirection: 'column', gap: 8, flex: 1, minWidth: 260 } },
+          h('div', { style: { display: 'flex', gap: 8, flexWrap: 'wrap' } }, CATS.map(c => { const on = cat === c; return h('button', { key: c, type: 'button', onClick: () => setCat(c), style: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '6px 14px', borderRadius: 999, border: '1px solid ' + (on ? 'var(--color-dark)' : 'var(--border-strong)'), background: on ? 'var(--color-dark)' : '#fff', color: on ? '#fff' : 'var(--gray-600)', fontSize: 13, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' } }, on && h(Icons.check, { size: 13, stroke: 2.5 }), c); })),
+          cat === '其他' && h('input', { value: customCat, onChange: (e) => setCustomCat(e.target.value), placeholder: '輸入文件名稱，例：租約、建物謄本…', style: { padding: '8px 12px', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-md)', fontSize: 13, fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none', maxWidth: 280 } }))),
       h('label', { onDragOver: (e) => { e.preventDefault(); setDrag(true); }, onDragLeave: () => setDrag(false), onDrop: (e) => { e.preventDefault(); setDrag(false); addFiles(e.dataTransfer.files); }, style: { display: 'block', border: '2px dashed ' + (drag ? 'var(--color-dark)' : 'var(--border-strong)'), background: drag ? 'var(--primary-100)' : 'transparent', borderRadius: 'var(--radius-lg)', padding: '24px', textAlign: 'center', cursor: 'pointer', transition: 'border-color 130ms ease, background 130ms ease' } },
         h('input', { ref: inputRef, type: 'file', accept: 'application/pdf,image/png,image/jpeg', multiple: true, onChange: (e) => { addFiles(e.target.files); e.target.value = ''; }, style: { display: 'none' } }),
         h('div', { style: { display: 'flex', justifyContent: 'center', marginBottom: 10, color: 'var(--gray-400)' } }, h(Icons.upload, { size: 28 })),
-        h('div', { style: { fontSize: 14, fontWeight: 600, color: 'var(--gray-700)' } }, '點擊或拖曳上傳「' + cat + '」檔案'),
+        h('div', { style: { fontSize: 14, fontWeight: 600, color: 'var(--gray-700)' } }, '點擊或拖曳上傳「' + useCatOf() + '」檔案'),
         h('div', { style: { fontSize: 12, color: 'var(--gray-400)', marginTop: 4 } }, 'PDF、PNG、JPG（電腦截圖），可一次選多個')),
       docs.length > 0 && h('div', { style: { display: 'flex', flexDirection: 'column', marginTop: 14, border: '1px solid var(--border-default)', borderRadius: 'var(--radius-lg)', overflow: 'hidden' } },
         docs.map((d, i) => h('div', { key: d.id, style: { display: 'flex', alignItems: 'center', gap: 10, padding: '9px 14px', borderTop: i ? '1px solid var(--border-subtle)' : 'none', background: '#fff' } },
@@ -425,7 +445,7 @@
         if (window.MTAToastFlash) window.MTAToastFlash('權狀坪數通常大於等於可使用坪數', 'error');
         return;
       }
-      onSaved(f, isDraft);
+      onSaved({ ...toProperty(f), _photos: photos.map(x => x.src).filter(Boolean) }, isDraft);
     };
     return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 16 } },
       h(PageHeader, { title: '新增物件', sub: '填寫物件詳細資訊', onBack, crumbs: [{ label: '物件管理', onClick: onBack }, { label: catLabel, onClick: onBack }, { label: '新增物件' }] }),

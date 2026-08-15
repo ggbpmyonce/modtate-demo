@@ -185,7 +185,7 @@
       h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 } },
         h('h1', { style: { fontSize: 22, fontWeight: 700 } }, '物件管理'),
         h('div', { style: { display: 'flex', gap: 10 } },
-          h(Button, { variant: 'outline', size: 'sm', iconLeft: h(Icons.export, { size: 14 }) }, '匯出 Excel'),
+          h(Button, { variant: 'outline', size: 'sm', iconLeft: h(Icons.export, { size: 14 }), onClick: () => window.MTAUI.exportExcel(category === 'office' ? '物件管理_出租辦公' : '物件管理_出租店面', ['編號', '物件名稱', '地址', '租金(元/月)', '坪數', '樓層', '捷運', '狀態', '承辦'], visible.map(p => [p.id, p.name, p.address, p.rent, p.area, p.floor, p.mrt, (M.STATUS_LABELS.prop || {})[p.status] || p.status, M.staffName(p.staff)])) }, '匯出 Excel'),
           canAdd && h(Button, { variant: 'primary', size: 'sm', iconLeft: h(Icons.plus, { size: 14, stroke: 2 }), onClick: () => onAdd(category) }, '新增物件'))),
       // tabs
       h('div', { style: { display: 'flex', gap: 10 } },

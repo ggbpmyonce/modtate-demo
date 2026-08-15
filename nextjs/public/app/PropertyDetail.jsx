@@ -114,6 +114,10 @@
   function PropertyDetail({ p, role, mode, userName, onBack, onEdit, onShare, shareCopied, onRemarkAdded, onDocChanged, onDelete }) {
     const full = mode === 'full';
     const canManage = role === '老闆';
+    // 編輯權限：老闆／行政（含業務/行政）可編輯所有物件；業務僅能編輯自己承辦的物件
+    const myCodes = M.MY_STAFF_CODES[(M.ROLE_CONFIG[role] || {}).name] || [];
+    const isMine = myCodes.includes(p.staff);
+    const canEditProp = role === '老闆' || (role || '').includes('行政') || isMine;
     const [lb, setLb] = React.useState(-1); // lightbox index, -1 closed
     const photos = p.photos || [];
     const remaining = Math.max(0, photos.length - 5);
@@ -131,7 +135,8 @@
           h('span', { style: { fontWeight: 600, color: 'var(--text-primary)' } }, '物件詳細')),
         h('div', { style: { display: 'flex', gap: 10 } },
           h(Button, { variant: 'outline', size: 'sm', iconLeft: h(Icons.arrowLeft, { size: 13 }), onClick: onBack }, '返回列表'),
-          full && h(Button, { variant: 'primary', size: 'sm', onClick: onEdit }, '編輯物件'))),
+          full && canEditProp && h(Button, { variant: 'primary', size: 'sm', onClick: onEdit }, '編輯物件'),
+          full && !canEditProp && h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12, color: 'var(--gray-400)' } }, h(Icons.lock, { size: 12 }), '僅承辦業務可編輯'))),
       // gallery
       h('div', { className: 'mta-detail-gallery', style: { display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gridTemplateRows: '1fr 1fr', gap: 10, height: 380 } },
         h(PhotoTile, { src: photos[0], idx: 0, baseName: p.id, onOpen: setLb, style: { gridRow: 'span 2' } },
@@ -173,6 +178,8 @@
               field('行政區', district),
               field('物件類型', p.type),
               p.category === 'office' && field('類別', p.propClass || '純辦'),
+              field('是否有租客', p.hasTenant || '無'),
+              (p.hasTenant === '有') && field('租約到期', p.leaseUntil || '—'),
               field('出租樓層', p.floor),
               field('總樓層', p.totalFloor || '—'),
               h('div', { style: { gridColumn: '1 / -1' } }, field('地址', p.address)))),
@@ -225,7 +232,7 @@
               : h('div', { style: { fontSize: 14, color: 'var(--gray-400)', marginTop: 14 } }, '不限')),
           // 附近交通
           h(Section, { title: '附近交通', sub: '鄰近捷運站', top: true },
-            h('div', { style: grid3 }, field('最近捷運站', p.mrt))),
+            h('div', { style: grid3 }, field('捷運路線', p.mrtLine || '—'), field('最近捷運站', p.mrt || '—'))),
           // 店面資訊（僅店面）
           p.category === 'store' && h(Section, { title: '店面資訊', sub: '店面類型與客流', top: true },
             h('div', { style: grid3 },
@@ -278,7 +285,7 @@
                   p.selfListed && h('div', null, '屋主自行刊登：' + (p.selfListed === '是' ? (p.selfListedWhere || '是') : '否'))))
             : h('div', { style: { display: 'flex', alignItems: 'center', gap: 8, padding: '14px 14px', background: 'var(--surface-sunken)', borderRadius: 'var(--radius-md)', fontSize: 13, color: 'var(--gray-500)' } }, h(Icons.lock, { size: 14 }), '聯絡資訊僅承辦業務可見')),
           !full && h(Button, { variant: 'primary', size: 'md', onClick: onShare, iconLeft: shareCopied ? h(Icons.check, { size: 16, stroke: 2 }) : h(Icons.share, { size: 16 }), style: { width: '100%' } }, shareCopied ? '已複製連結' : '分享物件連結'))),
-      full && h(Section, { title: '產權文件', sub: '使用分區、使用執照、地籍圖 · 僅內部人員可見', top: true }, h(DocsSection, { p, userName, onChanged: onDocChanged })),
+      full && h(Section, { title: '產權文件', sub: '使用分區、使用執照、地籍圖、平面圖 · 僅內部人員可見', top: true }, h(DocsSection, { p, userName, canEditDocs: canEditProp, onChanged: onDocChanged })),
       full && h(Section, { title: '備註／重要資訊', sub: '內部使用 · 含建立人與時間', top: true }, h(RemarkThread, { seed: remarks, userName, canDelete: role === '老闆', onAdded: (text, isReply) => onRemarkAdded && onRemarkAdded(p.name, p.id, isReply) }))));
   }
   const img = { width: '100%', height: '100%', objectFit: 'cover', display: 'block' };
@@ -288,11 +295,12 @@
 
   // ── 產權文件 — internal-only upload/download (使用分區/使用執照/地籍圖) ──
   const fmtKB = (kb) => kb >= 1024 ? (kb / 1024).toFixed(1) + ' MB' : Math.round(kb) + ' KB';
-  function DocsSection({ p, userName, onChanged }) {
+  function DocsSection({ p, userName, canEditDocs, onChanged }) {
     const CATS = M.DOC_CATS;
     const [docs, setDocs] = React.useState(() => M.docsFor(p));
     React.useEffect(() => { setDocs(M.docsFor(p)); }, [p.id]);
     const [cat, setCat] = React.useState(CATS[0]);
+    const [customCat, setCustomCat] = React.useState('');
     const [drag, setDrag] = React.useState(false);
     const inputRef = React.useRef(null), replaceRef = React.useRef(null), pendingReplace = React.useRef(null);
     const flash = (t) => window.MTAToastFlash && window.MTAToastFlash(t);
@@ -300,8 +308,9 @@
     const addFiles = (files) => {
       const list = Array.from(files || []).filter(f => /pdf|image/.test(f.type) || /\.(pdf|png|jpe?g)$/i.test(f.name));
       if (!list.length) { flash('僅支援 PDF 或圖片檔'); return; }
-      setDocs(ds => [...ds, ...list.map((f, i) => ({ id: 'up-' + Date.now() + '-' + i, cat, ext: extOf(f.name), name: f.name, uploader: userName, time: fmtNow(), sizeKB: f.size / 1024, url: URL.createObjectURL(f) }))]);
-      flash('已上傳 ' + list.length + ' 個檔案至「' + cat + '」');
+      const useCat = cat === '其他' ? (customCat.trim() || '其他') : cat;
+      setDocs(ds => [...ds, ...list.map((f, i) => ({ id: 'up-' + Date.now() + '-' + i, cat: useCat, ext: extOf(f.name), name: f.name, uploader: userName, time: fmtNow(), sizeKB: f.size / 1024, url: URL.createObjectURL(f) }))]);
+      flash('已上傳 ' + list.length + ' 個檔案至「' + useCat + '」');
       if (onChanged) onChanged('上傳了', list.map(f => f.name).join('、'));
     };
     const doReplace = (file) => {
@@ -334,20 +343,25 @@
         h('div', { style: { fontSize: 12, color: 'var(--gray-400)', marginTop: 2 } }, d.uploader + (d.uploaderRole ? '（' + d.uploaderRole + '）' : '') + ' 上傳 · ' + d.time + ' · ' + fmtKB(d.sizeKB))),
       h('div', { style: { display: 'flex', gap: 6, flexShrink: 0 } },
         h('button', { style: ghost, onClick: () => download(d), title: '下載' }, h(Icons.download, { size: 13 }), '下載'),
-        h('button', { style: ghost, onClick: () => { pendingReplace.current = d.id; replaceRef.current && replaceRef.current.click(); }, title: '替換檔案' }, '替換'),
-        h('button', { style: { ...ghost, borderColor: 'var(--error-200)', color: 'var(--error-500)' }, onClick: () => del(d), title: '刪除' }, h(Icons.trash, { size: 13 }), '刪除')));
-    const groups = CATS.map(c => ({ cat: c, items: docs.filter(d => d.cat === c) })).filter(g => g.cat !== '其他' || g.items.length);
+        canEditDocs && h('button', { style: ghost, onClick: () => { pendingReplace.current = d.id; replaceRef.current && replaceRef.current.click(); }, title: '替換檔案' }, '替換'),
+        canEditDocs && h('button', { style: { ...ghost, borderColor: 'var(--error-200)', color: 'var(--error-500)' }, onClick: () => del(d), title: '刪除' }, h(Icons.trash, { size: 13 }), '刪除')));
+    const dynCats = [...new Set(docs.map(d => d.cat).filter(c => !CATS.includes(c)))];
+    const groups = CATS.filter(c => c !== '其他').map(c => ({ cat: c, items: docs.filter(d => d.cat === c) }))
+      .concat(dynCats.map(c => ({ cat: c, items: docs.filter(d => d.cat === c) })))
+      .concat(docs.some(d => d.cat === '其他') ? [{ cat: '其他', items: docs.filter(d => d.cat === '其他') }] : []);
     return h('div', { style: { marginTop: 16, display: 'flex', flexDirection: 'column', gap: 14 } },
       h('div', { style: { display: 'flex', alignItems: 'center', gap: 7, fontSize: 12.5, color: 'var(--gray-500)', background: 'var(--surface-sunken)', border: '1px solid var(--border-default)', borderRadius: 'var(--radius-md)', padding: '8px 12px' } },
-        h(Icons.lock, { size: 13 }), '內部文件 — 所有業務／行政皆可上傳、下載與修改；分享連結的客戶不會看到此區塊。'),
-      h('div', { onDragOver: (e) => { e.preventDefault(); setDrag(true); }, onDragLeave: () => setDrag(false), onDrop: (e) => { e.preventDefault(); setDrag(false); addFiles(e.dataTransfer.files); }, style: { border: '1.5px dashed ' + (drag ? 'var(--color-dark)' : 'var(--border-strong)'), background: drag ? 'var(--primary-100)' : '#fff', borderRadius: 'var(--radius-lg)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', transition: 'border-color 130ms ease, background 130ms ease' } },
+        h(Icons.lock, { size: 13 }), canEditDocs ? '內部文件 — 老闆／行政可修改所有物件；業務僅能修改自己承辦物件的文件。分享連結的客戶不會看到此區塊。' : '內部文件 — 此物件由其他業務承辦，您僅能檢視與下載文件。分享連結的客戶不會看到此區塊。'),
+      canEditDocs && h('div', { onDragOver: (e) => { e.preventDefault(); setDrag(true); }, onDragLeave: () => setDrag(false), onDrop: (e) => { e.preventDefault(); setDrag(false); addFiles(e.dataTransfer.files); }, style: { border: '1.5px dashed ' + (drag ? 'var(--color-dark)' : 'var(--border-strong)'), background: drag ? 'var(--primary-100)' : '#fff', borderRadius: 'var(--radius-lg)', padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap', transition: 'border-color 130ms ease, background 130ms ease' } },
         h('span', { style: { width: 40, height: 40, borderRadius: 999, background: 'var(--primary-100)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-dark)', flexShrink: 0 } }, h(Icons.upload, { size: 18 })),
         h('div', { style: { flex: 1, minWidth: 180 } },
           h('div', { style: { fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' } }, '拖曳檔案到此處，或點擊上傳'),
           h('div', { style: { fontSize: 12, color: 'var(--gray-400)', marginTop: 2 } }, '支援 PDF、PNG、JPG（電腦截圖），可一次選取多個檔案')),
-        h('div', { style: { display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 } },
-          h('select', { value: cat, onChange: (e) => setCat(e.target.value), style: { padding: '8px 12px', border: '1px solid var(--border-strong)', borderRadius: 'var(--radius-md)', fontSize: 13, fontFamily: 'inherit', color: 'var(--text-primary)', background: '#fff', outline: 'none', cursor: 'pointer' } }, CATS.map(c => h('option', { key: c, value: c }, c))),
-          h(Button, { variant: 'primary', size: 'sm', iconLeft: h(Icons.upload, { size: 14 }), onClick: () => inputRef.current && inputRef.current.click() }, '上傳檔案')),
+        h(Button, { variant: 'primary', size: 'sm', iconLeft: h(Icons.upload, { size: 14 }), onClick: () => inputRef.current && inputRef.current.click(), style: { flexShrink: 0 } }, '上傳檔案'),
+        h('div', { style: { width: '100%', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', paddingTop: 10, borderTop: '1px dashed var(--border-default)' } },
+          h('span', { style: { fontSize: 12.5, fontWeight: 600, color: 'var(--gray-500)', flexShrink: 0 } }, '文件類別'),
+          CATS.map(c => { const on = cat === c; return h('button', { key: c, type: 'button', onClick: () => setCat(c), style: { display: 'inline-flex', alignItems: 'center', gap: 6, padding: '5px 13px', borderRadius: 999, border: '1px solid ' + (on ? 'var(--color-dark)' : 'var(--border-strong)'), background: on ? 'var(--color-dark)' : '#fff', color: on ? '#fff' : 'var(--gray-600)', fontSize: 12.5, fontWeight: 600, cursor: 'pointer', fontFamily: 'inherit' } }, on && h(Icons.check, { size: 12, stroke: 2.5 }), c); }),
+          cat === '其他' && h('input', { value: customCat, onChange: (e) => setCustomCat(e.target.value), placeholder: '輸入文件名稱，例：租約、建物謄本…', style: { padding: '6px 12px', border: '1px solid var(--border-strong)', borderRadius: 999, fontSize: 12.5, fontFamily: 'inherit', color: 'var(--text-primary)', outline: 'none', width: 220 } })),
         h('input', { ref: inputRef, type: 'file', multiple: true, accept: 'application/pdf,image/png,image/jpeg', style: { display: 'none' }, onChange: (e) => { addFiles(e.target.files); e.target.value = ''; } }),
         h('input', { ref: replaceRef, type: 'file', accept: 'application/pdf,image/png,image/jpeg', style: { display: 'none' }, onChange: (e) => { doReplace(e.target.files[0]); e.target.value = ''; } })),
       h('div', { style: { display: 'flex', flexDirection: 'column', gap: 10 } },

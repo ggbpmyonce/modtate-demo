@@ -88,7 +88,21 @@
     const deleteProperty = (p) => { setDeletedIds(ids => ids.includes(p.id) ? ids : [...ids, p.id]); flash(`已刪除物件「${p.name}」`); };
     const startEdit = (p) => { setEditing(p.id); setView('editProperty'); };
     const saveEdit = (form) => { const name = form.name || (M.PROPERTIES.find(x => x.id === editing) || {}).name || ''; setOverrides(o => ({ ...o, [editing]: { ...(o[editing] || {}), ...form } })); setEditing(null); setView('properties'); flash(`已儲存物件變更「${name}」`); };
-    const addProperty = (form, isDraft) => { const nm = (form && (form.buildingName || form.name)) || '未命名物件'; setView('properties'); flash(isDraft ? '已儲存為草稿' : `已新增物件「${nm}」`); if (!isDraft) pushNotif(`${roleConfig.name} 新增了物件「${nm}」`, ['老闆', '業務', '行政'], 'property'); };
+    const addProperty = (rec, isDraft) => {
+      const nm = (rec && rec.name) || '未命名物件';
+      const codes = M.MY_STAFF_CODES[roleConfig.name] || [];
+      const prefix = codes[0] || 'A';
+      const maxN = M.PROPERTIES.reduce((mx, p) => { const m = String(p.id).match(/(\d+)$/); return m ? Math.max(mx, Number(m[1])) : mx; }, 0);
+      const id = prefix + (maxN + 1);
+      const n = new Date();
+      const created = n.getFullYear() + '/' + String(n.getMonth() + 1).padStart(2, '0') + '/' + String(n.getDate()).padStart(2, '0');
+      const { _photos, ...fields } = rec || {};
+      M.PROPERTIES.unshift({ id, staff: prefix, created, ...fields });
+      setOverrides(o => (_photos && _photos.length) ? { ...o, [id]: { ...(o[id] || {}), _photos } } : { ...o });
+      setView('properties');
+      flash(isDraft ? '已儲存為草稿' : `已新增物件「${nm}」（編號 ${id}）`);
+      if (!isDraft) pushNotif(`${roleConfig.name} 新增了物件「${nm}」`, ['老闆', '業務', '行政'], 'property');
+    };
     const onRemarkAdded = (propName, propId, isReply) => pushNotif(`${roleConfig.name} ${isReply ? `在「${propName}」的討論串有新回覆` : `在「${propName}」新增了備註`}`, ['老闆', '業務'], 'remark', propId);
     const openDetail = (id, mode) => { setDetailId(id); setDetailMode(mode || 'summary'); setView('propDetail'); };
     const doShare = (id) => { try { navigator.clipboard && navigator.clipboard.writeText('https://modtate.com/share/' + id); } catch (e) {} setShareCopied(true); flash('已複製分享連結'); clearTimeout(shareTimer.current); shareTimer.current = setTimeout(() => setShareCopied(false), 2000); };

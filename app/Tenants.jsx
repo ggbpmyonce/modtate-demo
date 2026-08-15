@@ -177,9 +177,11 @@
     const isNew = submitted && !submitted.tooShort && submitted.matches.length === 0;
     const td = { padding: '13px 12px', borderBottom: '1px solid var(--border-default)', verticalAlign: 'top' };
     return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 20 } },
-      h('div', null,
-        h('h1', { style: { fontSize: 22, fontWeight: 700 } }, '來電紀錄'),
-        h('p', { style: { fontSize: 13, color: 'var(--gray-400)', marginTop: 3 } }, `共 ${tenants.length} 通來電 · 每通來電獨立一筆`)),
+      h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 10 } },
+        h('div', null,
+          h('h1', { style: { fontSize: 22, fontWeight: 700 } }, '來電紀錄'),
+          h('p', { style: { fontSize: 13, color: 'var(--gray-400)', marginTop: 3 } }, `共 ${tenants.length} 通來電 · 每通來電獨立一筆`)),
+        h(Button, { variant: 'primary', size: 'sm', iconLeft: h(Icons.plus, { size: 14, stroke: 2 }), onClick: () => onAdd(q.trim()) }, '新增來電紀錄')),
       h(Card, { padding: 26, style: { borderRadius: 'var(--radius-xl)' } },
         h('div', { style: { display: 'flex', gap: 10, alignItems: 'flex-end', flexWrap: 'wrap' } },
           h('div', { style: { flex: 1, minWidth: 240 } },
@@ -231,7 +233,7 @@
           h('h1', { style: { fontSize: 22, fontWeight: 700 } }, '來電紀錄'),
           h('p', { style: { fontSize: 13, color: 'var(--gray-400)', marginTop: 3 } }, `共 ${tenants.length} 通來電 · 每通來電獨立一筆`)),
         h('div', { style: { display: 'flex', gap: 10 } },
-          h(Button, { variant: 'outline', size: 'sm', iconLeft: h(Icons.export, { size: 14 }) }, '匯出 Excel'),
+          h(Button, { variant: 'outline', size: 'sm', iconLeft: h(Icons.export, { size: 14 }), onClick: () => window.MTAUI.exportExcel('來電紀錄', ['客戶', '聯絡電話', '統編', '公司名稱/行業別', '需求／備註', '本次承辦', '來電日'], all.map(t => [t.name, (t.phone || '').replace(/\n/g, '；'), t.taxId || '', t.industry, t.notes, t.staffName, t.date])) }, '匯出 Excel'),
           h(Button, { variant: 'primary', size: 'sm', iconLeft: h(Icons.plus, { size: 14, stroke: 2 }), onClick: () => onAdd('') }, '新增來電紀錄'))),
       h(Card, { padding: 0, style: { overflow: 'hidden' } },
         h('div', { style: { display: 'flex', gap: 10, padding: '14px 22px', borderBottom: '1px solid var(--border-default)', alignItems: 'center', flexWrap: 'wrap' } },
