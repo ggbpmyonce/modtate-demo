@@ -190,6 +190,7 @@
               field('權狀坪數', p.registeredArea || '—'),
               field('主建物坪數', p.mainArea || '—'),
               field('附屬建物坪數', p.accessoryArea || '—'),
+              field('是否為切割坪數', p.splitArea || '否'),
               field('可工商登記', p.bizReg || '是'),
               field('可隔間', p.partition || '視情況而定'),
               field('可容納工位數', p.seats || '—'))),

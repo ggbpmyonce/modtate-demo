@@ -6,3 +6,7 @@ node_modules/
 # 上傳的截圖與暫存圖檔不進 repo
 uploads/
 screenshots/
+
+# 本機設定與匯出備份
+.claude/
+export/

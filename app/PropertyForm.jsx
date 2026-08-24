@@ -46,26 +46,22 @@
     const [newName, setNewName] = React.useState('');
     const items = list || O.facilities;
     const customs = f.customFacilities || [];
-    const acOn = !!f.acSystem && f.acSystem !== '無冷氣';
     const hasTK = items.includes('獨立衛生間');
     const tkOn = TK_OPTS.some(o => f.facilities.includes(o));
     const plain = items.filter(x => x !== '中央空調' && x !== '獨立衛生間').concat(customs);
-    const allOn = acOn && (!hasTK || tkOn) && plain.every(x => f.facilities.includes(x));
+    const allOn = (!hasTK || tkOn) && plain.every(x => f.facilities.includes(x));
     const setAll = () => {
-      if (allOn) { set('facilities', []); set('acSystem', '無冷氣'); }
-      else { set('facilities', plain.concat(hasTK ? [f.toiletKind || TK_OPTS[0]] : [])); if (!acOn) set('acSystem', AC_OPTS[0]); }
+      if (allOn) { set('facilities', []); }
+      else { set('facilities', plain.concat(hasTK ? [f.toiletKind || TK_OPTS[0]] : [])); }
     };
-    const setTK = (v) => { set('toiletKind', v); if (tkOn) set('facilities', f.facilities.filter(x => !TK_OPTS.includes(x)).concat([v])); };
+    const setTK = (v) => { set('toiletKind', v); if (v === '公共衛生間') set('toilet', '廁外'); if (tkOn) set('facilities', f.facilities.filter(x => !TK_OPTS.includes(x)).concat([v])); };
     const addCustom = () => { const n = newName.trim(); if (n && !customs.includes(n)) { set('customFacilities', customs.concat([n])); set('facilities', f.facilities.concat([n])); } setNewName(''); setAdding(false); };
     return h('div', { style: { display: 'flex', flexDirection: 'column', gap: 14 } },
       h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: '14px 16px', alignItems: 'center' } },
         h(Checkbox, { label: '全部', checked: allOn, onChange: setAll }),
-        items.map(x => {
-          if (x === '中央空調') return h('span', { key: x, style: { display: 'inline-flex', alignItems: 'center', gap: 8 } },
-            h(Checkbox, { checked: acOn, onChange: () => set('acSystem', acOn ? '無冷氣' : AC_OPTS[0]) }),
-            h('span', { style: { width: 190 } }, h(Select, { options: AC_OPTS, value: f.acSystem || AC_OPTS[0], onChange: (v) => set('acSystem', v) })));
+        items.filter(x => x !== '中央空調').map(x => {
           if (x === '獨立衛生間') return h('span', { key: x, style: { display: 'inline-flex', alignItems: 'center', gap: 8 } },
-            h(Checkbox, { checked: tkOn, onChange: () => set('facilities', tkOn ? f.facilities.filter(y => !TK_OPTS.includes(y)) : f.facilities.concat([f.toiletKind || TK_OPTS[0]])) }),
+            h(Checkbox, { checked: tkOn, onChange: () => { set('facilities', tkOn ? f.facilities.filter(y => !TK_OPTS.includes(y)) : f.facilities.concat([f.toiletKind || TK_OPTS[0]])); if (!tkOn && (f.toiletKind || TK_OPTS[0]) === '公共衛生間') set('toilet', '廁外'); } }),
             h('span', { style: { width: 160 } }, h(Select, { options: TK_OPTS, value: f.toiletKind || TK_OPTS[0], onChange: setTK })));
           return h(Checkbox, { key: x, label: x, checked: f.facilities.includes(x), onChange: () => toggle('facilities', x) });
         }),
@@ -220,7 +216,7 @@
     return {
       buildingName: '', city: '台北市', district: '', address: '', rentFloor: '', totalFloor: '',
       propType: '電梯大樓', propClass: '純辦', status: '招租中',
-      usableArea: '', registeredArea: '', mainArea: '', accessoryArea: '', areaBasis: '使用坪數', bizReg: '是', partition: '視情況而定', seatMin: '', seatMax: '',
+      usableArea: '', splitArea: '否', registeredArea: '', mainArea: '', accessoryArea: '', areaBasis: '使用坪數', bizReg: '是', partition: '視情況而定', seatMin: '', seatMax: '',
       rent: '', deposit: '面議', depositOther: '', mgmt: '', agencyFee: '', taxType: '未稅(個人)', minLease: '1年', minLeaseOther: '', freeRent: '無', freeRentOther: '', decoration: '簡易裝潢',
       facilities: [], customFacilities: [], toiletKind: '獨立衛生間', toilet: '廁內', acSystem: '獨立冷氣', acHours: '', parking: '無車位', parkingRent: '', parkingCount: '', parkingEntry: '坡道', parkingSpaces: [{ kind: '平面', price: '' }], ceilingH: '', passengerLift: '', cargoLift: '', propMgmtCompany: '',
       industries: [], suitUnlimited: false, suitIndustries: [], mrt: '', mrtLine: '', phonePosted: '否', selfListed: '否', selfListedWhere: '',
@@ -248,6 +244,7 @@
       mrtLine: p.mrtLine || Object.keys(M.MRT_LINES).find(l => M.MRT_LINES[l].some(s => (p.mrt || '').startsWith(s))) || '',
       contactIdentity: (p.contactRole === '屋主' ? '所有權人' : p.contactRole), honorific: honor, contactSurname: (p.contactName || '').replace(/(先生|小姐)$/, ''), contactPhone: p.phone,
       hasTenant: p.hasTenant || '無', leaseUntil: p.leaseUntil || '',
+      splitArea: p.splitArea || '否',
       owners: (p.owners && p.owners.length) ? p.owners : [{ name: '', honorific: '' }],
       contacts: (p.contacts && p.contacts.length) ? p.contacts : [{ identity: (p.contactRole === '屋主' ? '所有權人' : p.contactRole) || '所有權人', identityOther: '', honorific: honor, surname: (p.contactName || '').replace(/(先生|小姐)$/, ''), phone: p.phone || '' }],
     };
@@ -265,7 +262,7 @@
       // extended fields surfaced read-only in the detail view
       mrtLine: f.mrtLine,
       hasTenant: f.hasTenant, leaseUntil: f.hasTenant === '有' ? f.leaseUntil : '',
-      totalFloor: f.totalFloor ? (f.totalFloor + 'F') : '', areaBasis: f.areaBasis, bizReg: f.bizReg, partition: f.partition, seats,
+      totalFloor: f.totalFloor ? (f.totalFloor + 'F') : '', areaBasis: f.areaBasis, splitArea: f.splitArea, bizReg: f.bizReg, partition: f.partition, seats,
       registeredArea: f.registeredArea ? (f.registeredArea + ' 坪') : '', mainArea: f.mainArea ? (f.mainArea + ' 坪') : '', accessoryArea: f.accessoryArea ? (f.accessoryArea + ' 坪') : '',
       deposit: f.deposit === '其他（自訂）' ? (f.depositOther || '其他') : f.deposit, minLease: f.minLease === '其他（自訂）' ? (f.minLeaseOther || '其他') : f.minLease, freeRent: f.freeRent === '其他' ? (f.freeRentOther || '其他') : f.freeRent, decoration: f.decoration,
       toiletKind: f.toiletKind, toilet: f.toiletKind + '・' + f.toilet, ceilingH: f.ceilingH ? (f.ceilingH + ' 米') : '', passengerLift: f.passengerLift ? (f.passengerLift + ' 部') : '', cargoLift: f.cargoLift ? (f.cargoLift + ' 部') : '',
@@ -294,7 +291,7 @@
       h(FormCard, { title: '坪數與格局' },
         h('div', null, h(Lbl, { req: true }, '可使用坪數（坪）'), h(Input, { type: 'number', placeholder: '例：65', value: f.usableArea, onChange: (e) => set('usableArea', e.target.value) })),
         row3(inp('權狀坪數（坪）', true, 'registeredArea', { type: 'number', placeholder: '例：80' }), inp('主建物坪數（坪）', true, 'mainArea', { type: 'number', placeholder: '例：55' }), inp('附屬建物坪數（坪）', true, 'accessoryArea', { type: 'number', placeholder: '例：10' })),
-        row2(sel('可工商登記', true, O.bizReg, 'bizReg'), sel('可隔間', true, O.partition, 'partition')),
+        row3(sel('是否為切割坪數', true, ['否', '是'], 'splitArea'), sel('可工商登記', true, O.bizReg, 'bizReg'), sel('可隔間', true, O.partition, 'partition')),
         h('div', null, h(Lbl, null, '可容納工位數'),
           h('div', { style: { display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' } },
             h('div', { style: { flex: 1, minWidth: 90 } }, h(Input, { type: 'number', placeholder: '最少', value: f.seatMin, onChange: (e) => set('seatMin', e.target.value) })),
@@ -319,7 +316,7 @@
             h(Select, { options: O.deposit.concat(['其他（自訂）']), value: f.deposit, onChange: (v) => set('deposit', v) }),
             f.deposit === '其他（自訂）' && h('div', { style: { marginTop: 8 } }, h(Input, { placeholder: '請輸入押金，例：1.5個月或 NT$50,000', value: f.depositOther, onChange: (e) => set('depositOther', e.target.value) }))),
           inp('管理費（元/月）', false, 'mgmt', { type: 'number', placeholder: '例：4500（無則留空）' })),
-        inp('仲介費', false, 'agencyFee', { placeholder: '例：月租 0.5 個月 或 NT$30,000（無則留空）' }),
+        inp('仲介費', true, 'agencyFee', { placeholder: '例：月租 0.5 個月 或 NT$30,000' }),
         h(AvgRentField, { rent: f.rent, registeredArea: f.registeredArea }),
         h('div', { className: 'mta-form-2col', style: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 } },
           h('div', null, h(Lbl, { req: true }, '最短租期'),
@@ -329,10 +326,20 @@
             h(Select, { options: O.freeRent, value: f.freeRent, onChange: (v) => set('freeRent', v) }),
             f.freeRent === '其他' && h('div', { style: { marginTop: 8 } }, h(Input, { placeholder: '請輸入免租期，例：3週', value: f.freeRentOther, onChange: (e) => set('freeRentOther', e.target.value) })))),
         h('div', null, h(Lbl, { req: true }, '裝潢程度'), h(RadioGroup, { options: O.decoration, value: f.decoration, onChange: (v) => set('decoration', v), direction: 'row', gap: 24, style: { flexWrap: 'wrap' } }))),
+      // 所有權人 (老闆專屬)
+      canContacts && h(FormCard, { title: '所有權人' },
+        h(OwnerRows, { owners: f.owners && f.owners.length ? f.owners : [{ name: '', honorific: '' }], setOwners: (v) => set('owners', v) })),
+      // 聯絡資訊 (老闆專屬)
+      canContacts && h(FormCard, { title: '聯絡資訊' },
+        h(ContactRows, { contacts: f.contacts && f.contacts.length ? f.contacts : [{ identity: '所有權人', identityOther: '', honorific: '先生', surname: '', phone: '' }], setContacts: (v) => set('contacts', v) }),
+        h('div', { style: { marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: 14 } },
+          h('div', null, h(Lbl, null, '現場是否有張貼屋主電話'), h(RadioGroup, { options: ['是', '否'], value: f.phonePosted, onChange: (v) => set('phonePosted', v), direction: 'row', gap: 24 })),
+          h('div', null, h(Lbl, null, '屋主是否有自行刊登 591 或其他平台'), h(RadioGroup, { options: ['是', '否'], value: f.selfListed, onChange: (v) => set('selfListed', v), direction: 'row', gap: 24 })),
+          f.selfListed === '是' && h('div', { style: { maxWidth: 420 } }, h(Lbl, null, '刊登平台'), h(Input, { placeholder: '例：591、樂屋網、自售看板', value: f.selfListedWhere, onChange: (e) => set('selfListedWhere', e.target.value) })))),
       // 設備與設施
       h(FormCard, { title: '設備與設施' },
         h('div', null, h(Lbl, null, '提供設備'), h(FacilitiesPicker, { f, set, toggle, list: isStore ? O.storeFacilities : null, isStore })),
-        row3(h('div', null, h(Lbl, { req: true }, '廁所'), h(Select, { options: ['獨立衛生間', '公共衛生間'], value: f.toiletKind, onChange: (v) => set('toiletKind', v) })), h('div', null, h(Lbl, null, '\u00a0'), h(Select, { options: O.toilet, value: f.toilet, onChange: (v) => set('toilet', v) })), sel('車位', true, ensure(O.parking, f.parking), 'parking')),
+        row3(h('div', null, h(Lbl, { req: true }, '冷氣'), h(Select, { options: AC_OPTS, value: f.acSystem, onChange: (v) => set('acSystem', v) })), h('div', null, h(Lbl, { req: true }, '廁所（廁內/廁外）'), h(Select, { options: f.facilities.includes('公共衛生間') ? ['廁外'] : O.toilet, value: f.toilet, onChange: (v) => set('toilet', v) }), f.facilities.includes('公共衛生間') && h('p', { style: { fontSize: 12, color: 'var(--gray-400)', marginTop: 5 } }, '已勾選公共衛生間，自動帶入「廁外」')), sel('車位', true, ensure(O.parking, f.parking), 'parking')),
         f.parking === '有車位要另租' && h(ParkingSpaces, { f, set }),
         f.parking === '租金含車位' && h(ParkingSpaces, { f, set, noPrice: true }),
         (f.acSystem || '').includes('中央空調') && h('div', null, h(Lbl, { req: true }, '中央空調供應時間'), h(Input, { placeholder: '例：週一至週五 08:00–18:00（加班需另計）', value: f.acHours, onChange: (e) => set('acHours', e.target.value) })),
@@ -363,16 +370,6 @@
             f.mrtLine
               ? h(Select, { options: M.MRT_LINES[f.mrtLine].map(s => s + '站'), value: f.mrt, placeholder: '選擇捷運站', onChange: (v) => set('mrt', v) })
               : h(Select, { options: [], value: '', placeholder: '請先選擇捷運路線', onChange: () => {} })))),
-      // 所有權人 (老闆專屬)
-      canContacts && h(FormCard, { title: '所有權人' },
-        h(OwnerRows, { owners: f.owners && f.owners.length ? f.owners : [{ name: '', honorific: '' }], setOwners: (v) => set('owners', v) })),
-      // 聯絡資訊 (老闆專屬)
-      canContacts && h(FormCard, { title: '聯絡資訊' },
-        h(ContactRows, { contacts: f.contacts && f.contacts.length ? f.contacts : [{ identity: '所有權人', identityOther: '', honorific: '先生', surname: '', phone: '' }], setContacts: (v) => set('contacts', v) }),
-        h('div', { style: { marginTop: 18, paddingTop: 16, borderTop: '1px solid var(--border-subtle)', display: 'flex', flexDirection: 'column', gap: 14 } },
-          h('div', null, h(Lbl, null, '現場是否有張貼屋主電話'), h(RadioGroup, { options: ['是', '否'], value: f.phonePosted, onChange: (v) => set('phonePosted', v), direction: 'row', gap: 24 })),
-          h('div', null, h(Lbl, null, '屋主是否有自行刊登 591 或其他平台'), h(RadioGroup, { options: ['是', '否'], value: f.selfListed, onChange: (v) => set('selfListed', v), direction: 'row', gap: 24 })),
-          f.selfListed === '是' && h('div', { style: { maxWidth: 420 } }, h(Lbl, null, '刊登平台'), h(Input, { placeholder: '例：591、樂屋網、自售看板', value: f.selfListedWhere, onChange: (e) => set('selfListedWhere', e.target.value) })))),
       // 照片
       h(PhotoEditor, { photos, setPhotos }),
       // 產權文件
@@ -437,8 +434,8 @@
     const [photos, setPhotos] = React.useState([]);
     const [docs, setDocs] = React.useState([]);
     const save = (isDraft) => {
-      if (!isDraft && (!f.buildingName.trim() || !f.address.trim() || !f.usableArea || !f.registeredArea || !f.mainArea || !f.accessoryArea || !f.rent)) {
-        if (window.MTAToastFlash) window.MTAToastFlash('請填寫必填欄位（名稱、地址、坪數、租金）', 'error');
+      if (!isDraft && (!f.buildingName.trim() || !f.address.trim() || !f.usableArea || !f.registeredArea || !f.mainArea || !f.accessoryArea || !f.rent || !(f.agencyFee || '').trim())) {
+        if (window.MTAToastFlash) window.MTAToastFlash('請填寫必填欄位（名稱、地址、坪數、租金、仲介費）', 'error');
         return;
       }
       if (!isDraft && Number(f.registeredArea) < Number(f.usableArea)) {
@@ -463,8 +460,8 @@
     const [photos, setPhotos] = React.useState(() => (p.photos || []).map((src, i) => ({ src, name: p.id + '-' + (i + 1) + '.jpg', isNew: false })));
     const [docs, setDocs] = React.useState(() => M.docsFor(p));
     const save = () => {
-      if (!f.buildingName.trim() || !f.address.trim() || !f.usableArea || !f.registeredArea || !f.mainArea || !f.accessoryArea || !f.rent) {
-        if (window.MTAToastFlash) window.MTAToastFlash('請填寫必填欄位（名稱、地址、坪數、租金）', 'error');
+      if (!f.buildingName.trim() || !f.address.trim() || !f.usableArea || !f.registeredArea || !f.mainArea || !f.accessoryArea || !f.rent || !(f.agencyFee || '').trim()) {
+        if (window.MTAToastFlash) window.MTAToastFlash('請填寫必填欄位（名稱、地址、坪數、租金、仲介費）', 'error');
         return;
       }
       if (Number(f.registeredArea) < Number(f.usableArea)) {
