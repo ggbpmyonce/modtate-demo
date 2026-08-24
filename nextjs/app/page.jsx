@@ -30,7 +30,7 @@ const DS = '/_ds/modern-design-system-410f4dcf-0877-43ef-92bc-118095108ad4';
 const APP_SCRIPTS = [
   'shared.jsx', 'Login.jsx', 'Sidebar.jsx', 'Header.jsx', 'Dashboard.jsx',
   'Properties.jsx', 'PillFilters.jsx', 'PropertyDetail.jsx', 'PropertyForm.jsx',
-  'Tenants.jsx', 'Inquiries.jsx', 'Members.jsx', 'Account.jsx',
+  'Tenants.jsx', 'Inquiries.jsx', 'Members.jsx', 'Account.jsx', 'Settings.jsx',
   'tweaks-panel.jsx', 'App.jsx',
 ];
 

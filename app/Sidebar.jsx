@@ -10,6 +10,7 @@
     { key: 'inquiries', label: '詢問管理', icon: 'inquiry', badge: 'inq' },
     { key: 'tenants', label: '來電紀錄', icon: 'users' },
     { key: 'members', label: '使用者管理', icon: 'user' },
+    { key: 'settings', label: '下載操作日誌', icon: 'downloadFilled' },
   ];
 
   function NavItem({ item, active, onClick, propCount, newInq, dark }) {

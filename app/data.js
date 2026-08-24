@@ -9,7 +9,7 @@
   // not hue (status colours are reserved for state only).
   const ROLE_CONFIG = {
     '老闆': { initial: 'A', name: 'Aven Hsu', title: '老闆', email: 'aven@modtate.com',
-      nav: ['properties', 'tenants', 'members'] },
+      nav: ['properties', 'tenants', 'members', 'settings'] },
     '業務': { initial: '巫', name: '小巫', title: '業務', email: 'wu@modtate.com',
       nav: ['properties'] },
     '行政': { initial: '王', name: '王小美', title: '行政', email: 'wang@modtate.com',

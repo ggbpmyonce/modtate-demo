@@ -3,7 +3,7 @@
   const h = React.createElement;
   const { Icons, Avatar } = window.MTAUI;
 
-  const PAGE_TITLES = { dashboard: '儀表板', properties: '物件管理', inquiries: '詢問管理', tenants: '來電紀錄', members: '使用者管理', propDetail: '物件詳細', addProperty: '新增物件', editProperty: '編輯物件' };
+  const PAGE_TITLES = { dashboard: '儀表板', properties: '物件管理', inquiries: '詢問管理', tenants: '來電紀錄', members: '使用者管理', settings: '下載操作日誌', propDetail: '物件詳細', addProperty: '新增物件', editProperty: '編輯物件' };
   const ROLE_LIST = ['老闆', '業務', '行政', '業務/行政'];
 
   function RoleRow({ role, cfg, active, onClick }) {

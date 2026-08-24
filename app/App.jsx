@@ -7,6 +7,7 @@
   const PropertyDetail = window.MTAPropertyDetail, AddProperty = window.MTAAddProperty, EditProperty = window.MTAEditProperty;
   const Tenants = window.MTATenants, Members = window.MTAMembers, Inquiries = window.MTAInquiries;
   const Account = window.MTAAccount;
+  const Settings = window.MTASettings;
   const Login = window.MTALogin;
   const Toast = window.MTAUI.Toast, useToast = window.MTAUI.useToast;
   const { useTweaks, TweaksPanel, TweakSection, TweakRadio } = window;
@@ -122,6 +123,7 @@
     else if (view === 'inquiries') content = h(Inquiries);
     else if (view === 'tenants') content = h(Tenants, { role });
     else if (view === 'members') content = h(Members);
+    else if (view === 'settings') content = h(Settings, { role });
     else if (view === 'account') content = h(Account, { roleConfig, role, onBack: () => setView('properties') });
 
     return h('div', { id: 'mta-grid', style: { display: 'grid', gridTemplateColumns: '256px 1fr', minHeight: '100vh', background: 'var(--surface-page)', color: 'var(--text-primary)', fontSize: 14 } },
